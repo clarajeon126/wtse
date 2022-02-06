@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import Game from './scenes/Game';
-const C = {
+import Parallax from './scenes/Parallax';
+const Con = {
     type: Phaser.AUTO,
     parent: 'phaser-example',
     width: 128,
@@ -11,6 +12,23 @@ const C = {
         arcade: {
         }
     }
+};
+
+var C = {
+            
+    type: Phaser.AUTO,
+    width: 2048,
+    height: 1024,
+    //zoom: 4,
+    pixelArt: true,
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 300 },
+            debug: false
+        }
+    }
+
 };
 
 //resize canvas!!
@@ -33,6 +51,7 @@ window.onload = () => {
   const game = new Phaser.Game(C)
   resize()
   game.scene.add('game', Game)
-  game.scene.start('game')
+  game.scene.add('parallax', Parallax)
+  game.scene.start('parallax')
   window.addEventListener("resize",resize,false)
 }
