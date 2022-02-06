@@ -1,11 +1,11 @@
 import Phaser from 'phaser';
 import Game from './scenes/Game';
 import Parallax from './scenes/Parallax';
-const Con = {
-    type: Phaser.AUTO,
+const C = {
+    type: Phaser.CANVAS,
     parent: 'phaser-example',
-    width: 128,
-    height: 96,
+    width: 192,
+    height: 108,
     pixelArt: true,
     physics: {
         default: 'arcade',
@@ -14,22 +14,22 @@ const Con = {
     }
 };
 
-var C = {
+// var C = {
             
-    type: Phaser.AUTO,
-    width: 2048,
-    height: 1024,
-    //zoom: 4,
-    pixelArt: true,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 300 },
-            debug: false
-        }
-    }
+//     type: Phaser.AUTO,
+//     width: 2048,
+//     height: 1024,
+//     //zoom: 4,
+//     pixelArt: true,
+//     physics: {
+//         default: 'arcade',
+//         arcade: {
+//             gravity: { y: 300 },
+//             debug: false
+//         }
+//     }
 
-};
+// };
 
 //resize canvas!!
 function resize() {
@@ -41,6 +41,7 @@ function resize() {
     if (wratio < ratio) {
         canvas.style.width = width + "px";
         canvas.style.height = (width / ratio) + "px";
+        
     } else {
         canvas.style.width = (height * ratio) + "px";
         canvas.style.height = height + "px";
@@ -50,6 +51,7 @@ function resize() {
 window.onload = () => {
   const game = new Phaser.Game(C)
   resize()
+
   game.scene.add('game', Game)
   game.scene.add('parallax', Parallax)
   game.scene.start('parallax')
