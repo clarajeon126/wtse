@@ -6,7 +6,7 @@ import farcity from "../assets/passets/farcity.png";
 import sidewalk from "../assets/passets/sidewalkfront.png";
 import sky from "../assets/passets/sky.png";
 import streetlights from "../assets/passets/streetlights.png";
-import gradient from "../assets/passets/gradient.png";
+import gradient from "../assets/passets/gradientlight.png";
 import upSidewalk from "../assets/passets/sidewalkbehind.png";
 
 // import background from "../assets/passets/b.png";
@@ -36,19 +36,19 @@ export default class Parallax extends Phaser.Scene {
         this.city = this.add.tileSprite(96, 54, 0, 0, 'city');
         this.closecity = this.add.tileSprite(96, 54, 0, 0, 'closecity');
         this.sidewalk = this.add.image(96, 88, 'sidewalk')
-        this.upSidewalk = this.add.image(96,54, 'upSidewalk')
+        this.upSidewalk = this.add.image(96, 77, 'upSidewalk')
         this.streetlights = this.add.tileSprite(96, 54, 0, 0, 'streetlights');
         this.bushes = this.add.tileSprite(96, 54, 0, 0, 'bushes');
-        this.gradiant = this.add.image(96, 90, 'gradient')
+        this.gradiant = this.add.image(96, 95, 'gradient')
         this.slider = this.add.image(96, 90, 'slider')
 
         //slider physics!
         this.physics.add.existing(this.slider)
         this.slider.body.setBounce(1, 0)
 
-        this.leftInvisWall = this.add.rectangle(62, 90, 1, 9, 0xff0000, 1)
-        this.rightInvisWall = this.add.rectangle(130, 90, 1, 9, 0xff0000, 1)
-        this.bottomInvisWall = this.add.rectangle(96, 96, 68, 1, 0xff0000, 1)
+        this.leftInvisWall = this.add.rectangle(62, 95, 1, 9, 0xff0000, 1)
+        this.rightInvisWall = this.add.rectangle(130, 95, 1, 9, 0xff0000, 1)
+        this.bottomInvisWall = this.add.rectangle(96, 101, 68, 1, 0xff0000, 1)
 
         this.physics.add.existing(this.leftInvisWall, true)
         this.physics.add.existing(this.rightInvisWall, true)
