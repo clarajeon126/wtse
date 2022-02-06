@@ -5,9 +5,10 @@ import nextbutton from "../assets/passets/nextbutton.png";
 export default class Intro extends Phaser.Scene
 {
     
-    constructor ()
-    {
-        super();
+    constructor(){
+        super({
+            key: "Intro"
+        })
     }
 
     
