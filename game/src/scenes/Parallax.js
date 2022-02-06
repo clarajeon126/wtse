@@ -111,7 +111,14 @@ export default class Parallax extends Phaser.Scene {
 
             //stop slider
             this.slider.body.setVelocityX(0)
-            console.log("right walk " + this.slider.body.x)
+            var xPos = this.slider.body.x
+
+
+            //7 px away from very center
+            if(xPos >103 ||xPos < 85){
+                console.log("MISSED LLLLLL")
+            }
+            console.log("right walk " + xPos)
             this.time.addEvent({
                 delay: 400,
                 callback: ()=>{
@@ -131,6 +138,13 @@ export default class Parallax extends Phaser.Scene {
             this.closecity.tilePositionX += .4;
             this.streetlights.tilePositionX += .8;
 
+            var xPos = this.slider.body.x
+
+
+            //7 px away from very center
+            if(xPos > 103 || xPos < 85){
+                console.log("MISSED LLLLLL")
+            }
             //stop slider
             this.slider.body.setVelocityX(0)
             console.log("left walk " + this.slider.body.x)
