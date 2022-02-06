@@ -3,10 +3,12 @@ import bushes from "../assets/passets/bushes.png";
 import city from "../assets/passets/city.png";
 import closecity from "../assets/passets/closecity.png";
 import farcity from "../assets/passets/farcity.png";
-import sidewalk from "../assets/passets/sidewalk.png";
+import sidewalk from "../assets/passets/sidewalkfront.png";
 import sky from "../assets/passets/sky.png";
 import streetlights from "../assets/passets/streetlights.png";
-import gradient from "../assets/passets/gradient.png"
+import gradient from "../assets/passets/gradient.png";
+import upSidewalk from "../assets/passets/sidewalkbehind.png";
+
 // import background from "../assets/passets/b.png";
 import slider from "../assets/slider.png"
 import person from "../assets/passets/peoplesprite.png"
@@ -18,6 +20,7 @@ export default class Parallax extends Phaser.Scene {
             this.load.image('closecity', closecity);
             this.load.image('farcity', farcity);
             this.load.image('sidewalk', sidewalk);
+            this.load.image('upSidewalk', upSidewalk)
             this.load.image('sky', sky);
             this.load.image('streetlights', streetlights);
             this.load.image('gradient', gradient)
@@ -32,6 +35,8 @@ export default class Parallax extends Phaser.Scene {
         this.farcity = this.add.tileSprite(96, 54, 0, 0, 'farcity');
         this.city = this.add.tileSprite(96, 54, 0, 0, 'city');
         this.closecity = this.add.tileSprite(96, 54, 0, 0, 'closecity');
+        this.sidewalk = this.add.image(96, 88, 'sidewalk')
+        this.upSidewalk = this.add.image(96,54, 'upSidewalk')
         this.streetlights = this.add.tileSprite(96, 54, 0, 0, 'streetlights');
         this.bushes = this.add.tileSprite(96, 54, 0, 0, 'bushes');
         this.gradiant = this.add.image(96, 90, 'gradient')
@@ -52,7 +57,7 @@ export default class Parallax extends Phaser.Scene {
         // this.sidewalk = this.physics.add.staticGroup();
         // this.sidewalk.create(96, 54, 'sidewalk');
 
-        this.sidewalk = this.add.image(96, 0, 'sidewalk')
+        
         this.physics.add.existing(this.sidewalk, true);  
 
         this.physics.add.collider(this.bottomInvisWall, this.slider)    
@@ -92,70 +97,83 @@ export default class Parallax extends Phaser.Scene {
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         // this.player.anims.play('right')
         // this.physics.add.collider(this.player, this.sidewalk);
+
+        this.nextStepReady = true
+
     }
 
     
     update() {
-        
-        function moveParallaxBG() {
-            
-        }
+        var minStepSize = 2
 
         if (Phaser.Input.Keyboard.JustDown(this.rightKey)) {
 
-            //parallax move
-            this.farcity.tilePositionX += .1;
-            this.city.tilePositionX += .2;
-            this.closecity.tilePositionX += .4;
-            this.streetlights.tilePositionX += .8;
+            if(this.nextStepReady) {
+                this.nextStepReady = false
+                //parallax move
+                this.farcity.tilePositionX += minStepSize;
+                this.city.tilePositionX += minStepSize * 2;
+                this.closecity.tilePositionX += minStepSize * 4;
+                this.streetlights.tilePositionX += minStepSize * 8;
+                this.bushes.tilePositionX += minStepSize * 16
 
-            //stop slider
-            this.slider.body.setVelocityX(0)
-            var xPos = this.slider.body.x
+                //stop slider
+                this.slider.body.setVelocityX(0)
+                var xPos = this.slider.body.x
 
 
-            //7 px away from very center
-            if(xPos >103 ||xPos < 85){
-                console.log("MISSED LLLLLL")
-            }
-            console.log("right walk " + xPos)
-            this.time.addEvent({
-                delay: 400,
-                callback: ()=>{
-                    this.slider.body.setVelocityX(75)
+                //7 px away from very center
+                if(xPos >103 ||xPos < 85){
+                    console.log("MISSED LLLLLL")
                 }
-            })
-            // this.morehills.tilePositionX += 1.6;
-            // this.road.tilePositionX += 3.2;
-    
+                console.log("right walk " + xPos)
+                this.time.addEvent({
+                    delay: 400,
+                    callback: ()=>{
+                        this.nextStepReady = true
+                        this.slider.body.setVelocityX(75)
+                    }
+                })
+                // this.morehills.tilePositionX += 1.6;
+                // this.road.tilePositionX += 3.2;
+        
 
-            // //player.x +=2;
-            this.player.anims.play('right',true)
+                // //player.x +=2;
+                this.player.anims.play('right',true)
+            }
+            
         }
         else if (Phaser.Input.Keyboard.JustDown(this.leftKey)) {
-            this.farcity.tilePositionX += .1;
-            this.city.tilePositionX += .2;
-            this.closecity.tilePositionX += .4;
-            this.streetlights.tilePositionX += .8;
 
-            var xPos = this.slider.body.x
+            if(this.nextStepReady) {
+                this.nextStepReady = false
 
-
-            //7 px away from very center
-            if(xPos > 103 || xPos < 85){
-                console.log("MISSED LLLLLL")
-            }
-            //stop slider
-            this.slider.body.setVelocityX(0)
-            console.log("left walk " + this.slider.body.x)
-            this.time.addEvent({
-                delay: 400,
-                callback: ()=>{
-                    this.slider.body.setVelocityX(-75)
+                this.farcity.tilePositionX += minStepSize;
+                this.city.tilePositionX += minStepSize * 2;
+                this.closecity.tilePositionX += minStepSize * 4;
+                this.streetlights.tilePositionX += minStepSize * 8;
+                this.bushes.tilePositionX += minStepSize * 16
+                var xPos = this.slider.body.x
+    
+    
+                //7 px away from very center
+                if(xPos > 103 || xPos < 85){
+                    console.log("MISSED LLLLLL")
                 }
-            })
-
-            this.player.anims.play('left', true)
+                //stop slider
+                this.slider.body.setVelocityX(0)
+                console.log("left walk " + this.slider.body.x)
+                this.time.addEvent({
+                    delay: 400,
+                    callback: ()=>{
+                        this.nextStepReady = true
+                        this.slider.body.setVelocityX(-75)
+                    }
+                })
+    
+                this.player.anims.play('left', true)
+            }
+            
 
         }
         else if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
