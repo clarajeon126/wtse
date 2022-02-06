@@ -15,7 +15,7 @@ const C = {
             debug: false
         }
     },
-    scene: [Intro]
+    scene: [Parallax, Intro, Text]
 };
 
 // var C = {
@@ -54,8 +54,8 @@ function resize() {
 
 window.onload = () => {
   const game = new Phaser.Game(C)
-  resize()
-
+//   resize()
+    
   
-  window.addEventListener("resize",resize,false)
+//   window.addEventListener("resize",resize,false)
 }

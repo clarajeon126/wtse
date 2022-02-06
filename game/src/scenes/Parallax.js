@@ -40,10 +40,24 @@ export default class Parallax extends Phaser.Scene {
             this.load.image('crack3', crack3)
             this.load.image('crack4', crack4)
             this.load.spritesheet('person', person, { frameWidth: 24, frameHeight: 50});
+
     }
 
     create() {
-
+        let canvas = document.querySelector("canvas");
+        console.log(canvas.width)
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+        let wratio = width / height;
+        let ratio = 192/ 108;
+        if (wratio < ratio) {
+            canvas.style.width = width + "px";
+            canvas.style.height = (width / ratio) + "px";
+            
+        } else {
+            canvas.style.width = (height * ratio) + "px";
+            canvas.style.height = height + "px";
+        }
         //parallax bg images
         this.sky = this.add.tileSprite(96,54, 192, 108,'sky');
         this.farcity = this.add.tileSprite(96, 54, 0, 0, 'farcity');
@@ -116,8 +130,9 @@ export default class Parallax extends Phaser.Scene {
         // this.physics.add.collider(this.player, this.sidewalk);
 
         this.nextStepReady = true
+        // this.scale.setParentSize(1920,1080)
 
-
+        
     }
 
     
