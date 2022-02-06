@@ -9,11 +9,21 @@ import streetlights from "../assets/passets/streetlights.png";
 import gradient from "../assets/passets/gradientlight.png";
 import upSidewalk from "../assets/passets/sidewalkbehind.png";
 
+import crack1 from "../assets/passets/crack1.png"
+import crack2 from "../assets/passets/crack2.png"
+import crack3 from "../assets/passets/crack3.png"
+import crack4 from "../assets/passets/crack4.png"
+
 // import background from "../assets/passets/b.png";
 import slider from "../assets/slider.png"
 import person from "../assets/passets/peoplesprite.png"
 export default class Parallax extends Phaser.Scene {
 
+    constructor(){
+        super({
+            key: "Parallax"
+        })
+    }
     preload() {
             this.load.image('bushes', bushes);
             this.load.image('city', city);
@@ -25,6 +35,10 @@ export default class Parallax extends Phaser.Scene {
             this.load.image('streetlights', streetlights);
             this.load.image('gradient', gradient)
             this.load.image('slider', slider)
+            this.load.image('crack1', crack1)
+            this.load.image('crack2', crack2)
+            this.load.image('crack3', crack3)
+            this.load.image('crack4', crack4)
             this.load.spritesheet('person', person, { frameWidth: 24, frameHeight: 50});
     }
 
@@ -37,6 +51,9 @@ export default class Parallax extends Phaser.Scene {
         this.closecity = this.add.tileSprite(96, 54, 0, 0, 'closecity');
         this.sidewalk = this.add.image(96, 88, 'sidewalk')
         this.upSidewalk = this.add.image(96, 77, 'upSidewalk')
+
+        this.crack1 = this.add.image(96, 84,'crack1')
+
         this.streetlights = this.add.tileSprite(96, 54, 0, 0, 'streetlights');
         this.bushes = this.add.tileSprite(96, 54, 0, 0, 'bushes');
         this.gradiant = this.add.image(96, 95, 'gradient')
@@ -115,6 +132,7 @@ export default class Parallax extends Phaser.Scene {
                 this.city.tilePositionX += minStepSize * 2;
                 this.closecity.tilePositionX += minStepSize * 4;
                 this.streetlights.tilePositionX += minStepSize * 8;
+                this.crack1.x -= minStepSize * 4;
                 this.bushes.tilePositionX += minStepSize * 16
 
                 //stop slider
@@ -179,14 +197,20 @@ export default class Parallax extends Phaser.Scene {
         else if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
             this.player.setVelocityY(-100);
             this.slider.body.setVelocityX(0)
+            this.crack1.x -= minStepSize * 20;
+
         }
-        else {
-            this.player.setVelocityX(0);
+        else if(this.cursors.up.isDown) {
+
+            this.scene.start('Intro')
             // if(!(this.player.anims.currentAnim === 'right')){
             //     console.log("idk")
             //     this.player.anims.play('still', true)
             // }
 
+        }
+        else {
+            this.player.setVelocityX(0);
         }
 
     }

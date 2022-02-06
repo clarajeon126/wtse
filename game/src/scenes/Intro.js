@@ -7,9 +7,10 @@ import fontxml from "../assets/font.xml";
 export default class Intro extends Phaser.Scene
 {
     
-    constructor ()
-    {
-        super();
+    constructor(){
+        super({
+            key: "Intro"
+        })
     }
 
     
