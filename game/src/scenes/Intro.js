@@ -1,6 +1,8 @@
 import Phaser from "phaser";
 import baseboard from '../assets/passets/baseboard.png';
 import nextbutton from "../assets/passets/nextbutton.png";
+import fontpng from "../assets/font.png";
+import fontxml from "../assets/font.xml";
 
 export default class Intro extends Phaser.Scene
 {
@@ -15,11 +17,16 @@ export default class Intro extends Phaser.Scene
     {
         this.load.image('nextbutton', nextbutton);
         this.load.image('baseboard', baseboard);
-        this.game.load.bitmapFont(
-            'font',
-            'assets/font.png',
-            'assets/font.xml'
-          );
+        // this.load.bitmapFont(
+        //     'font',
+        //     fontpng,
+        //     fontxml
+        //   );
+        this.load.bitmapFont(
+                'font',
+                fontpng,
+                fontxml
+              );
     }
 
 
@@ -37,7 +44,10 @@ export default class Intro extends Phaser.Scene
             "however, as you walk along the sidewalk, beware of cracks!",
             "make sure to jump over them with the space bar",
             "...who knows what'll happen otherwise"];
-        var infoText = this.add.bitmapText(200, 100, 'font', text[1], 2);
+        var infotext = this.add.text(20,10, text[1]);
+        infotext.setScale('.8');
+        //this.add.bitmapText(20, 10, 'font',text[1]);
+        console.log('cool');
         
     }
 

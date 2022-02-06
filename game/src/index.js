@@ -59,7 +59,7 @@ window.onload = () => {
   game.scene.add('game', Game)
   game.scene.add('parallax', Parallax)
   game.scene.start('parallax')
-  //game.scene.start('intro')
+ // game.scene.start('intro')
   
   window.addEventListener("resize",resize,false)
 }
