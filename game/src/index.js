@@ -10,8 +10,10 @@ const C = {
     physics: {
         default: 'arcade',
         arcade: {
+            gravity: { y: 300 },
+            debug: false
         }
-    }
+    },
 };
 
 // var C = {

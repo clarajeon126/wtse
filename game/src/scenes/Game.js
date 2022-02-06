@@ -20,7 +20,6 @@ export default class Game extends Phaser.Scene
     {
         const logo = this.add.image(64, 48, 'logo');
         logo.setOrigin = (0.0,0.0)
-
         this.avatar = this.add.sprite(20,65, 'avatar')
         this.physics.add.existing(this.avatar, true)
         this.cursors = this.input.keyboard.createCursorKeys()
