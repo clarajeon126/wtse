@@ -56,16 +56,11 @@ window.onload = () => {
   const game = new Phaser.Game(C)
   resize()
 
-<<<<<<< HEAD
   game.scene.add('intro', Intro)
   game.scene.add('game', Game)
   game.scene.add('parallax', Parallax)
-  game.scene.start('parallax')
+ game.scene.start('parallax')
  // game.scene.start('intro')
-=======
-//   game.scene.start('parallax')
-  //game.scene.start('intro')
->>>>>>> 092cb7486bea4010652c25d6a698fe6b031bde65
   
   window.addEventListener("resize",resize,false)
 }
