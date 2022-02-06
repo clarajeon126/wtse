@@ -46,7 +46,9 @@ export default class Intro extends Phaser.Scene
             "make sure to jump over them with the space bar",
             "...who knows what'll happen otherwise"];
         var infotext = this.add.text(20,10, text[1]);
-        infotext.setScale('.8');
+        // infotext.setScale(.01)
+        // infotext.setResolution(90);
+        // this.add.bitmapText(200,100, 'font', text[1])
         //this.add.bitmapText(20, 10, 'font',text[1]);
         console.log('cool');
         

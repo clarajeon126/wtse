@@ -117,6 +117,7 @@ export default class Parallax extends Phaser.Scene {
 
         this.nextStepReady = true
 
+
     }
 
     
