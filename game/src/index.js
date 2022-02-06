@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import Game from './scenes/Game';
 import Parallax from './scenes/Parallax';
-import Index from './scenes/Intro';
+import Intro from './scenes/Intro';
 const C = {
     type: Phaser.CANVAS,
     parent: 'phaser-example',
@@ -55,9 +55,11 @@ window.onload = () => {
   const game = new Phaser.Game(C)
   resize()
 
+  game.scene.add('intro', Intro)
   game.scene.add('game', Game)
   game.scene.add('parallax', Parallax)
   game.scene.start('parallax')
-  game.scene.add('intro', Intro)
+  //game.scene.start('intro')
+  
   window.addEventListener("resize",resize,false)
 }
