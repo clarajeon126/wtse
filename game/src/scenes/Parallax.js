@@ -30,34 +30,39 @@ export default class Parallax extends Phaser.Scene {
         this.farcity = this.add.tileSprite(96, 54, 0, 0, 'farcity');
         this.city = this.add.tileSprite(96, 54, 0, 0, 'city');
         this.closecity = this.add.tileSprite(96, 54, 0, 0, 'closecity');
-        this.sidewalk = this.add.tileSprite(96, 54, 0, 0, 'sidewalk');
+        this.sidewalk = this.add.image(96, 54, 'sidewalk');
         this.streetlights = this.add.tileSprite(96, 54, 0, 0, 'streetlights');
         this.bushes = this.add.tileSprite(96, 54, 0, 0, 'bushes');
         this.gradiant = this.add.image(96, 90, 'gradient')
         this.slider = this.add.image(96, 90, 'slider')
 
         this.physics.add.existing(this.slider)
-        this.slider.body.setBounce(1, 1)
+        this.slider.body.setBounce(1, 0)
 
         this.leftInvisWall = this.add.rectangle(62, 90, 1, 9, 0xff0000, 1)
         this.rightInvisWall = this.add.rectangle(130, 90, 1, 9, 0xff0000, 1)
-        this.bottomInvisWall = this.add.rectangle(96, 99, 68, 1, 0xff0000, 1)
+        this.bottomInvisWall = this.add.rectangle(96, 96, 68, 1, 0xff0000, 1)
 
         this.physics.add.existing(this.leftInvisWall, true)
         this.physics.add.existing(this.rightInvisWall, true)
         this.physics.add.existing(this.bottomInvisWall, true)
 
-        this.physics.add.collider(this.bottomInvisWall, this.slider)
+        this.physics.add.existing(this.sidewalk, true)
+          
+
+        this.physics.add.collider(this.bottomInvisWall, this.slider)    
         this.physics.add.collider(this.leftInvisWall, this.slider)
         this.physics.add.collider(this.rightInvisWall, this.slider)
         // this.sidewalk = this.physics.add.staticGroup();
         // this.sidewalk.create(96, 800, 'sidewalk');
 
-        this.player = this.physics.add.sprite(20, 75, 'person');
+        this.player = this.physics.add.sprite(20, 50, 'person');
         
         this.player.setBounce(0.2);
         this.player.setCollideWorldBounds(true);
 
+        this.physics.add.collider(this.sidewalk, this.player)  
+        
         // this.anims.create({
         //     key: 'right',
         //     frames: this.anims.generateFrameNumbers('person', { start: 0, end: 2 }),
@@ -99,7 +104,7 @@ export default class Parallax extends Phaser.Scene {
             this.closecity.tilePositionX += .4;
             this.streetlights.tilePositionX += .8;
 
-            this.slider.body.setVelocityX(100)
+            this.slider.body.setVelocityX(75)
             // this.morehills.tilePositionX += 1.6;
             // this.road.tilePositionX += 3.2;
     
@@ -113,7 +118,7 @@ export default class Parallax extends Phaser.Scene {
             this.closecity.tilePositionX += .4;
             this.streetlights.tilePositionX += .8;
 
-            this.slider.body.setVelocityX(-100)
+            this.slider.body.setVelocityX(-75)
             // this.player.setVelocity(-100)
         }
         else if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
