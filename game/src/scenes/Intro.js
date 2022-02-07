@@ -1,9 +1,10 @@
 import Phaser from "phaser";
 import baseboard from '../assets/passets/baseboard.png';
 import nextbutton from "../assets/passets/nextbutton.png";
-import fontpng from "../assets/font.png";
-import fontxml from "../assets/font.xml";
-
+import fontpng from "../assets/Unnamed.png";
+import fontxml from "../assets/Unnamed.xml";
+// import fontpng from "../assets/minecraftia.png";
+// import fontxml from "../assets/minecraftia.xml";
 export default class Intro extends Phaser.Scene
 {
     
@@ -18,11 +19,6 @@ export default class Intro extends Phaser.Scene
     {
         this.load.image('nextbutton', nextbutton);
         this.load.image('baseboard', baseboard);
-        // this.load.bitmapFont(
-        //     'font',
-        //     fontpng,
-        //     fontxml
-        //   );
         this.load.bitmapFont(
                 'font',
                 fontpng,
