@@ -2,20 +2,21 @@ import Phaser from 'phaser';
 import Game from './scenes/Game';
 import Parallax from './scenes/Parallax';
 import Intro from './scenes/Intro';
+import Text from './scenes/Text';
 const C = {
     type: Phaser.CANVAS,
     parent: 'phaser-example',
-    width: 192,
-    height: 108,
+    width: 1920,
+    height: 1080,
     pixelArt: true,
     physics: {
         default: 'arcade',
         arcade: {
             gravity: { y: 300 },
-            debug: false
+            debug: true
         }
     },
-    scene: [Parallax, Intro, Text]
+    scene: [Parallax, Text]
 };
 
 // var C = {

@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+
 import bushes from "../assets/passets/bushes.png";
 import city from "../assets/passets/city.png";
 import closecity from "../assets/passets/closecity.png";
@@ -14,9 +15,9 @@ import crack2 from "../assets/passets/crack2.png"
 import crack3 from "../assets/passets/crack3.png"
 import crack4 from "../assets/passets/crack4.png"
 
-// import background from "../assets/passets/b.png";
 import slider from "../assets/slider.png"
 import person from "../assets/passets/peoplesprite.png"
+
 export default class Parallax extends Phaser.Scene {
 
     constructor(){
@@ -25,120 +26,126 @@ export default class Parallax extends Phaser.Scene {
         })
     }
     preload() {
-            this.load.image('bushes', bushes);
-            this.load.image('city', city);
-            this.load.image('closecity', closecity);
-            this.load.image('farcity', farcity);
-            this.load.image('sidewalk', sidewalk);
-            this.load.image('upSidewalk', upSidewalk)
-            this.load.image('sky', sky);
-            this.load.image('streetlights', streetlights);
-            this.load.image('gradient', gradient)
-            this.load.image('slider', slider)
-            this.load.image('crack1', crack1)
-            this.load.image('crack2', crack2)
-            this.load.image('crack3', crack3)
-            this.load.image('crack4', crack4)
-            this.load.spritesheet('person', person, { frameWidth: 24, frameHeight: 50});
+
+        //load all the assets :DD
+        this.load.image('bushes', bushes);
+        this.load.image('city', city);
+        this.load.image('closecity', closecity);
+        this.load.image('farcity', farcity);
+        this.load.image('sidewalk', sidewalk);
+        this.load.image('upSidewalk', upSidewalk)
+        this.load.image('sky', sky);
+        this.load.image('streetlights', streetlights);
+        this.load.image('gradient', gradient)
+        this.load.image('slider', slider)
+        this.load.image('crack1', crack1)
+        this.load.image('crack2', crack2)
+        this.load.image('crack3', crack3)
+        this.load.image('crack4', crack4)
+        this.load.spritesheet('person', person, { frameWidth: 24, frameHeight: 50});
 
     }
 
     create() {
-        let canvas = document.querySelector("canvas");
-        console.log(canvas.width)
-        let width = window.innerWidth;
-        let height = window.innerHeight;
-        let wratio = width / height;
-        let ratio = 192/ 108;
-        if (wratio < ratio) {
-            canvas.style.width = width + "px";
-            canvas.style.height = (width / ratio) + "px";
-            
-        } else {
-            canvas.style.width = (height * ratio) + "px";
-            canvas.style.height = height + "px";
-        }
+
         //parallax bg images
-        this.sky = this.add.tileSprite(96,54, 192, 108,'sky');
+        this.sky = this.add.tileSprite(96, 54, 0, 0,'sky');
         this.farcity = this.add.tileSprite(96, 54, 0, 0, 'farcity');
         this.city = this.add.tileSprite(96, 54, 0, 0, 'city');
         this.closecity = this.add.tileSprite(96, 54, 0, 0, 'closecity');
+
+        //sidewalk under (the one that has the physics)
         this.sidewalk = this.add.image(96, 88, 'sidewalk')
+        this.physics.add.existing(this.sidewalk, true); 
+
+        //the up sidewalk
         this.upSidewalk = this.add.image(96, 77, 'upSidewalk')
 
+        //add cracks
         this.crack1 = this.add.image(96, 84,'crack1')
 
+        //parallax bg image in front of the sidewalk nonsense
         this.streetlights = this.add.tileSprite(96, 54, 0, 0, 'streetlights');
         this.bushes = this.add.tileSprite(96, 54, 0, 0, 'bushes');
+
+        //slider stuff + slider physics
         this.gradiant = this.add.image(96, 95, 'gradient')
         this.slider = this.add.image(96, 90, 'slider')
-
-        //slider physics!
         this.physics.add.existing(this.slider)
         this.slider.body.setBounce(1, 0)
 
+        //rect for slider physics stuff
         this.leftInvisWall = this.add.rectangle(62, 95, 1, 9, 0xff0000, 1)
         this.rightInvisWall = this.add.rectangle(130, 95, 1, 9, 0xff0000, 1)
         this.bottomInvisWall = this.add.rectangle(96, 101, 68, 1, 0xff0000, 1)
-
         this.physics.add.existing(this.leftInvisWall, true)
         this.physics.add.existing(this.rightInvisWall, true)
         this.physics.add.existing(this.bottomInvisWall, true)
 
-        // this.sidewalk = this.physics.add.staticGroup();
-        // this.sidewalk.create(96, 54, 'sidewalk');
-
-        
-        this.physics.add.existing(this.sidewalk, true);  
-
-        this.physics.add.collider(this.bottomInvisWall, this.slider)    
-        this.physics.add.collider(this.leftInvisWall, this.slider)
-        this.physics.add.collider(this.rightInvisWall, this.slider)
-
+        //player add and physics!
         this.player = this.physics.add.sprite(20, 50, 'person');
-        
         this.player.setBounce(0.2);
         this.player.setCollideWorldBounds(true);
 
+        //add all the colliders
+        this.physics.add.collider(this.bottomInvisWall, this.slider)    
+        this.physics.add.collider(this.leftInvisWall, this.slider)
+        this.physics.add.collider(this.rightInvisWall, this.slider)
         this.physics.add.collider(this.sidewalk, this.player)  
-        
+
+        //player animations
         this.anims.create({
             key: 'right',
             frames: this.anims.generateFrameNumbers('person', {frames: [7,8,9]}),
             frameRate: 6,
             repeat: 0
         });
-
         this.anims.create({
             key: 'left',
             frames: this.anims.generateFrameNumbers('person', { frames: [3,4,9] }),
             frameRate: 6,
             repeat: 0
         });
-
         this.anims.create({
             key: 'still',
             frames: [{ key: 'person', frame: 9 }],
             frameRate: 20,
         });
 
+        //cursor stuff so that it only detects the first click
         this.cursors = this.input.keyboard.createCursorKeys();
         this.rightKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         this.leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        // this.player.anims.play('right')
-        // this.physics.add.collider(this.player, this.sidewalk);
 
+        //so that u cant constantly press l/r buttons, its used in the update stuff
         this.nextStepReady = true
-        // this.scale.setParentSize(1920,1080)
 
-        
+        //scales every game object this is actually so big brain im godly B)
+        this.group = this.add.group(this.children.list)
+        this.group.children.iterate((child, index) => {
+            //scale everything except for graphics
+            if(index != 0){
+                console.log(child.type)
+                child.setScale(10, 10)
+                child.setX(child.x * 10)
+                child.setY(child.y * 10)
+            }
+
+            //updates the physics body for all objects w physics so that the physics bodys rnt mini sized yk
+            if(child.body){
+                child.body.updateFromGameObject()
+            } 
+        });
     }
 
     
     update() {
+
+        //change this for the change in parallax "distance" will be changed when changing "step size"
         var minStepSize = 2
 
+        //when right key pressed
         if (Phaser.Input.Keyboard.JustDown(this.rightKey)) {
 
             if(this.nextStepReady) {
@@ -146,10 +153,10 @@ export default class Parallax extends Phaser.Scene {
                 //parallax move
                 this.farcity.tilePositionX += minStepSize;
                 this.city.tilePositionX += minStepSize * 2;
-                this.closecity.tilePositionX += minStepSize * 4;
-                this.streetlights.tilePositionX += minStepSize * 8;
+                this.closecity.tilePositionX += minStepSize * 3;
+                this.streetlights.tilePositionX += minStepSize * 4;
                 this.crack1.x -= minStepSize * 4;
-                this.bushes.tilePositionX += minStepSize * 16
+                this.bushes.tilePositionX += minStepSize * 5
 
                 //stop slider
                 this.slider.body.setVelocityX(0)
@@ -165,7 +172,7 @@ export default class Parallax extends Phaser.Scene {
                     delay: 400,
                     callback: ()=>{
                         this.nextStepReady = true
-                        this.slider.body.setVelocityX(75)
+                        this.slider.body.setVelocityX(750)
                     }
                 })
                 // this.morehills.tilePositionX += 1.6;
@@ -175,8 +182,8 @@ export default class Parallax extends Phaser.Scene {
                 // //player.x +=2;
                 this.player.anims.play('right',true)
             }
-            
         }
+            //when left key pressed
         else if (Phaser.Input.Keyboard.JustDown(this.leftKey)) {
 
             if(this.nextStepReady) {
@@ -201,7 +208,7 @@ export default class Parallax extends Phaser.Scene {
                     delay: 400,
                     callback: ()=>{
                         this.nextStepReady = true
-                        this.slider.body.setVelocityX(-75)
+                        this.slider.body.setVelocityX(-750)
                     }
                 })
     
@@ -211,7 +218,7 @@ export default class Parallax extends Phaser.Scene {
 
         }
         else if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
-            this.player.setVelocityY(-100);
+            this.player.setVelocityY(-1000);
             this.slider.body.setVelocityX(0)
             this.crack1.x -= minStepSize * 20;
 
