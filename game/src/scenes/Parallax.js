@@ -55,7 +55,7 @@ export default class Parallax extends Phaser.Scene {
         this.closecity = this.add.tileSprite(96, 54, 0, 0, 'closecity');
 
         //sidewalk under (the one that has the physics)
-        this.sidewalk = this.add.image(96, 88, 'sidewalk')
+        this.sidewalk = this.add.tileSprite(96, 88, 0,0, 'sidewalk')
         this.physics.add.existing(this.sidewalk, true); 
 
         //the up sidewalk
@@ -145,12 +145,21 @@ export default class Parallax extends Phaser.Scene {
         //change this for the change in parallax "distance" will be changed when changing "step size"
         var minStepSize = 2
 
-        //when right key pressed
-        if (Phaser.Input.Keyboard.JustDown(this.rightKey)) {
+        //when space, right, or left key is tapped
+        if (Phaser.Input.Keyboard.JustDown(this.rightKey) ||
+            Phaser.Input.Keyboard.JustDown(this.leftKey) ||
+            Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+            console.log("space left or right tapped")
 
+            //only run if next step is ready (in order to stop continuous key spams)
             if(this.nextStepReady) {
+
+                //set to false; will be changed after time delay
                 this.nextStepReady = false
-                //parallax move
+                
+                //check if in the green zone
+
+                //parallax move bg
                 this.farcity.tilePositionX += minStepSize;
                 this.city.tilePositionX += minStepSize * 2;
                 this.closecity.tilePositionX += minStepSize * 3;
