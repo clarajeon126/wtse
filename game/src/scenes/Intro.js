@@ -1,8 +1,8 @@
 import Phaser from "phaser";
 import baseboard from '../assets/passets/baseboard.png';
 import nextbutton from "../assets/passets/nextbutton.png";
-import fontpng from "../assets/Unnamed.png";
-import fontxml from "../assets/Unnamed.xml";
+import fontpng from "../assets/pixel.png";
+import fontxml from "../assets/pixel.xml";
 // import fontpng from "../assets/minecraftia.png";
 // import fontxml from "../assets/minecraftia.xml";
 export default class Intro extends Phaser.Scene
