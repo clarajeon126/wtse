@@ -121,13 +121,14 @@ export default class Parallax extends Phaser.Scene {
         //so that u cant constantly press l/r buttons, its used in the update stuff
         this.nextStepReady = true
 
-        //scales every game object this is actually so big brain im godly B)
+        //scales every game object this is actually so big brain im godly 😎
         this.group = this.add.group(this.children.list)
         this.group.children.iterate((child, index) => {
+
             //scale everything except for graphics
             if(index != 0){
                 console.log(child.type)
-                child.setScale(10, 10)
+                child.setScale(10, 10)  
                 child.setX(child.x * 10)
                 child.setY(child.y * 10)
             }
