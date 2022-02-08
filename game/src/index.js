@@ -4,7 +4,7 @@ import Parallax from './scenes/Parallax';
 import Intro from './scenes/Intro';
 import Text from './scenes/Text';
 const C = {
-    type: Phaser.CANVAS,
+    type: Phaser.AUTO,
     parent: 'phaser-example',
     width: 1920,
     height: 1080,
@@ -16,7 +16,7 @@ const C = {
             debug: true
         }
     },
-    scene: [Parallax]
+    scene: [Intro,Parallax]
 };
 
 // var C = {
