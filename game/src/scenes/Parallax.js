@@ -52,7 +52,7 @@ export default class Parallax extends Phaser.Scene {
     }
 
     create() {
-
+        
         //parallax bg images
         this.sky = this.add.tileSprite(96, 54, 0, 0,'sky');
         this.farcity = this.add.tileSprite(96, 54, 0, 0, 'farcity');
@@ -87,7 +87,8 @@ export default class Parallax extends Phaser.Scene {
         this.physics.add.existing(this.bottomInvisWall, true)
 
         //player add and physics!
-        this.player = this.physics.add.sprite(20, 50, 'person');
+        this.player = this.physics.add.sprite(0, 100, 'person');
+        this.player.setOrigin(0,0)
         this.player.setBounce(0.2);
         this.player.setCollideWorldBounds(true);
 
@@ -178,23 +179,53 @@ export default class Parallax extends Phaser.Scene {
         //add cracks
 
         //generate beginning crack display
-        var level = Array(26).fill(0)
+        var arr = Array(26).fill(0)
+        this.level = [arr]
 
-        var x = 0
+        var x = 4
 
         const percentOfCrack = 30
-        while(x < Array.length){
+        while(x < this.level[0].length){
             const ranNumYNCrack = Math.floor(Math.random() * (100)) + 1;
-            if(ranNumYNCrack <= 30){
-                //
+            console.log(ranNumYNCrack)
+            //30% of the time a tile gets a crack
+            if(ranNumYNCrack <= 15){
+                const doubleWidthOrNot = Math.floor(Math.random() * (20)) + 1
+
+                //20% of the time the crack will be double
+                if(doubleWidthOrNot <= 20){
+                    if(doubleWidthOrNot % 2 == 0){
+                        this.level[0][x] = 3
+                        this.level[0][x+1] = 4
+                    }
+                    else {
+                        this.level[0][x] = 5
+                        this.level[0][x] = 6
+                    }
+                    x += 2
+                }
+                else {
+                    if(ranNumYNCrack % 2 == 0){
+                        this.level[0][x] = 1
+                    }
+                    else {
+                        this.level[0][x] = 2
+                    }
+                    x += 1
+                }
+            }
+            else {
+                x+=1
             }
         }
-        
+        console.log(this.level)
           // When loading from an array, make sure to specify the tileWidth and tileHeight
-          const map = this.make.tilemap({ data: level, tileWidth: 80, tileHeight: 220 });
-          const tiles = map.addTilesetImage("crack-tiles");
-          const layer = map.createLayer(0, tiles)
-          console.log(map)
+          this.map = this.make.tilemap({ data: this.level, tileWidth: 80, tileHeight: 220 });
+          this.tiles = this.map.addTilesetImage("crack-tiles");
+          this.layer = this.map.createLayer(0, this.tiles,0, 740)
+          console.log(this.map)
+
+          console.log(this.game.canvas.height)
     }
 
     
@@ -263,8 +294,7 @@ export default class Parallax extends Phaser.Scene {
                     this.bushes.tilePositionX += this.minStepSize * 5
 
                     //move cracks
-                    this.crack1.x -= this.minStepSize * 40;
-
+                    this.layer.x -= this.minStepSize * 40
                     //run walk anim or jump which depends on right or left step
                     if(Phaser.Input.Keyboard.JustDown(this.spaceKey)){
                         this.player.setVelocityY(-1000);

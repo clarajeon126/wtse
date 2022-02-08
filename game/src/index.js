@@ -56,9 +56,7 @@ function resize() {
 window.onload = () => {
   const game = new Phaser.Game(C)
 
-  resize()
 
-//   window.addEventListener("resize",resize,false)
 }
 
 
