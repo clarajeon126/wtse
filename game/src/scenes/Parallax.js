@@ -20,6 +20,11 @@ import person from "../assets/passets/peoplesprite.png"
 
 import cracktilemap from "../assets/cracktilemap.png"
 
+import baseboard from '../assets/passets/baseboard.png';
+
+import fontpng from "../assets/minecraftia.png";
+import fontxml from "../assets/minecraftia.xml";
+
 export default class Parallax extends Phaser.Scene {
 
     constructor(){
@@ -45,10 +50,18 @@ export default class Parallax extends Phaser.Scene {
         this.load.image('crack3', crack3)
         this.load.image('crack4', crack4)
 
+        this.load.image('baseboard', baseboard)
+
         this.load.image("crack-tiles", cracktilemap);
 
         this.load.spritesheet('person', person, { frameWidth: 24, frameHeight: 50});
 
+        //load font
+        this.load.bitmapFont(
+            'font',
+            fontpng,
+            fontxml
+        );
     }
 
     create() {
@@ -128,7 +141,10 @@ export default class Parallax extends Phaser.Scene {
         //add texts
         this.wrongFootMsg = this.add.text(960, 540, "nope wrong foot lulz").setFontSize(40).setColor('red').setVisible(false)
         this.missedGreenMsg = this.add.text(960, 540, "yikes.. you missed. aim for the green zone!!").setFontSize(40).setColor('red').setVisible(false)
-        this.progreesText = this.add.text(1300, 100, "0/50 miles || 0%")
+        this.progressText = this.add.text(1300, 100, "0/50 miles || 0%")
+        
+        //death message
+        this.baseboard = this.add.image(96, 54, 'baseboard').setVisible(true).setDepth(100)
 
         this.showTextForASec = (text, delay) => {
             text.setVisible(true)
@@ -229,14 +245,17 @@ export default class Parallax extends Phaser.Scene {
           console.log(this.game.canvas.height)
 
 
+        this.deathText = this.add.bitmapText(960, 540, 'font', 'your mums back broke \n \n OH NO!').setFontSize(40).setMaxWidth(900).setCenterAlign().setOrigin(0.5,0.5).setDepth(1000)
+
+
+        //if dead will change this variable and wont run any of the stuff inside update
         this.isOnDeathMsg = false
         this.physics.add.overlap(this.player, this.layer, function(thePlayer, tile) {
-
             if(tile.index != 0){
                 console.log(tile.index)
-                this.game.isOnDeathMsg = true
+                this.isOnDeathMsg = true
             }
-        });
+        }, null, this);
     }
 
 
