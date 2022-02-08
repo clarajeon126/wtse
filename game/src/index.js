@@ -16,7 +16,7 @@ const C = {
             debug: true
         }
     },
-    scene: [Intro,Parallax, Text]
+    scene: [Intro, Parallax, Text]
 };
 
 // var C = {

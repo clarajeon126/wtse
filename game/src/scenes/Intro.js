@@ -85,11 +85,13 @@ export default class Intro extends Phaser.Scene {
         });
 
         //when clicking
-        this.nextbutton.on('pointerdown', ()=> 
-            
-         //this.anims.play('click', true),
-            this.updateText(++i),
-            this.changeFrame(true),
+        this.nextbutton.on('pointerdown', ()=> {
+            this.nextbutton.anims.play('click', true)
+            //this.anims.play('click', true),
+               this.updateText(++i)
+               this.changeFrame(true)
+        }
+           
 
         );
 
