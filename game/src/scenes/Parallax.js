@@ -18,7 +18,10 @@ import crack4 from "../assets/passets/crack4.png"
 import slider from "../assets/slider.png"
 import person from "../assets/passets/peoplesprite.png"
 
-import cracktilemap from "../assets/cracktilemap.png"
+import cracktilemap from "../assets/color.png"
+
+import fontpng from "../assets/minecraftia.png";
+import fontxml from "../assets/minecraftia.xml";
 
 export default class Parallax extends Phaser.Scene {
 
@@ -45,10 +48,18 @@ export default class Parallax extends Phaser.Scene {
         this.load.image('crack3', crack3)
         this.load.image('crack4', crack4)
 
+        this.load.tilemapCSV('csv', "src/assets/crackmap.csv")
+
         this.load.image("crack-tiles", cracktilemap);
 
         this.load.spritesheet('person', person, { frameWidth: 24, frameHeight: 50});
 
+        //load font
+        this.load.bitmapFont(
+            'font',
+            fontpng,
+            fontxml
+        );
     }
 
     create() {
@@ -86,17 +97,19 @@ export default class Parallax extends Phaser.Scene {
         this.physics.add.existing(this.rightInvisWall, true)
         this.physics.add.existing(this.bottomInvisWall, true)
 
-        //player add and physics! begin one tile away
-        this.player = this.physics.add.sprite(8, 0, 'person')
-        this.player.setOrigin(0,0)
-        this.player.setBounce(0.2);
-        this.player.setCollideWorldBounds(true);
+        //make group w all parallax bg objs
+        this.backgroundGroup = this.add.group([this.farcity, this.city, this.closecity, this.streetlights, this.bushes])
+        
 
+        //so that tile layer doesnt fall of the game
+        this.layerSupport = this.add.rectangle(96,97, 192,2, 0xff0000, 1)
+        this.physics.add.existing(this.layerSupport, true)
+
+        
         //add all the colliders
         this.physics.add.collider(this.bottomInvisWall, this.slider)    
         this.physics.add.collider(this.leftInvisWall, this.slider)
         this.physics.add.collider(this.rightInvisWall, this.slider)
-        this.physics.add.collider(this.sidewalk, this.player)  
 
         //player animations
         this.anims.create({
@@ -128,8 +141,9 @@ export default class Parallax extends Phaser.Scene {
         //add texts
         this.wrongFootMsg = this.add.text(960, 540, "nope wrong foot lulz").setFontSize(40).setColor('red').setVisible(false)
         this.missedGreenMsg = this.add.text(960, 540, "yikes.. you missed. aim for the green zone!!").setFontSize(40).setColor('red').setVisible(false)
-        this.progreesText = this.add.text(1300, 100, "0/50 miles || 0%")
-
+        this.progressText = this.add.text(1300, 100, "0/50 miles || 0%")
+        
+        
         this.showTextForASec = (text, delay) => {
             text.setVisible(true)
             this.time.addEvent({
@@ -171,72 +185,57 @@ export default class Parallax extends Phaser.Scene {
             } 
         });
 
-        //add cracks
 
-        //generate beginning crack display
-        var arr = Array(26).fill(0)
-        this.level = [arr]
+        // make tile map from csv
+        this.map = this.make.tilemap({ key: 'csv', tileWidth: 80, tileHeight: 220 });
+        this.tiles = this.map.addTilesetImage("crack-tiles");
+        this.layer = this.map.createLayer(0, this.tiles, 0, 740)
+        
 
-        var x = 4
+        //player add and physics! begin one tile away
+        this.player = this.physics.add.sprite(100, 0, 'person')
+        this.player.setOrigin(0,0)
+        this.player.setScale(8.33) //200(width) x 416.66
+        this.player.setCollideWorldBounds(true);
 
-        const percentOfCrack = 30
-        while(x < this.level[0].length){
-            const ranNumYNCrack = Math.floor(Math.random() * (100)) + 1;
-            console.log(ranNumYNCrack)
-            //30% of the time a tile gets a crack
-            if(ranNumYNCrack <= 15){
-                const doubleWidthOrNot = Math.floor(Math.random() * (20)) + 1
+        this.physics.add.collider(this.sidewalk, this.player)  
 
-                //20% of the time the crack will be double
-                if(doubleWidthOrNot <= 20){
-                    if(doubleWidthOrNot % 2 == 0){
-                        this.level[0][x] = 3
-                        this.level[0][x+1] = 4
-                    }
-                    else {
-                        this.level[0][x] = 5
-                        this.level[0][x] = 6
-                    }
-                    x += 2
-                }
-                else {
-                    if(ranNumYNCrack % 2 == 0){
-                        this.level[0][x] = 1
-                    }
-                    else {
-                        this.level[0][x] = 2
-                    }
-                    x += 1
-                }
-            }
-            else {
-                x+=1
-            }
-        }
+        //variables from the smooth move of parallax bg
+        this.isJumping = false
+        this.isInStep = false
 
-        //so that player is 160 px
-        // this.player.setScale(6.666)
-        // this.player.body.updateFromGameObject()
-        console.log(this.level)
-          // When loading from an array, make sure to specify the tileWidth and tileHeight
-            this.map = this.make.tilemap({ data: this.level, tileWidth: 80, tileHeight: 220 });
-            this.tiles = this.map.addTilesetImage("crack-tiles");
-            this.layer = this.map.createLayer(0, this.tiles, 0, 740)
-            // this.layer.setCollisionBetween(1,9)
-            // this.physics.add.collider(this.player, this.layer, null, null, this);
-          console.log(this.map)
-
-          console.log(this.game.canvas.height)
-
-
+        //if dead will change this variable and wont run any of the stuff inside update
         this.isOnDeathMsg = false
         this.physics.add.overlap(this.player, this.layer, function(thePlayer, tile) {
-
-            if(tile.index != 0){
-                console.log(tile.index)
-                this.game.isOnDeathMsg = true
+            if(!this.isOnDeathMsg && !this.isJumping){
+                var tilesPlayerIsTouching = this.layer.getTilesWithinWorldXY(100,740, 200, 220)
+                tilesPlayerIsTouching.every((tile) => {
+                    if(tile.index != 0){
+                        //died!!!
+                        this.isOnDeathMsg = true
+                        this.scene.launch("Death", { time: this.currentTime })
+                        return false;
+                    }
+                    return true;
+                })
             }
-        });
+        }, null, this);
+
+
+        //so that cracks dont collapse and fall :D
+        this.physics.add.existing(this.layer)
+        this.physics.add.collider(this.layer, this.layerSupport)
+
+        this.currentTime = 0.0
+        this.start1msTimer = () => {
+            this.time.addEvent({
+                delay:100, 
+                callback: () => {
+                    this.currentTime += .1
+                    this.start1msTimer()
+            }})
+        }
+        this.start1msTimer()
     }
 
 
@@ -244,13 +243,36 @@ export default class Parallax extends Phaser.Scene {
     update() {
 
         //change this for the change in parallax "distance" will be changed when changing "step size"
-
         var correctStepTaken = "no"        
         var spaceTapped = false
         
+        this.progressText.setText(this.currentTime.toFixed(1))
         if(this.isOnDeathMsg){
             console.log("DEAD")
             return
+        }
+
+        if(this.isInStep) {
+            console.log('in STEEPPPP')
+            //parallax move bg
+            this.minStepSize = .5
+                    this.farcity.tilePositionX += this.minStepSize;
+                    this.city.tilePositionX += this.minStepSize * 2;
+                    this.closecity.tilePositionX += this.minStepSize * 3;
+                    this.streetlights.tilePositionX += this.minStepSize * 4;
+                    this.upSidewalk.tilePositionX += this.minStepSize * 4
+                    this.bushes.tilePositionX += this.minStepSize * 5
+        }
+        if(this.isJumping) {
+            console.log('in JUMPPP')
+            //parallax move bg
+            this.minStepSize = .5
+                    this.farcity.tilePositionX += this.minStepSize;
+                    this.city.tilePositionX += this.minStepSize * 2;
+                    this.closecity.tilePositionX += this.minStepSize * 3;
+                    this.streetlights.tilePositionX += this.minStepSize * 4;
+                    this.upSidewalk.tilePositionX += this.minStepSize * 4
+                    this.bushes.tilePositionX += this.minStepSize * 5
         }
         
         //to check if its the correct step
@@ -301,53 +323,60 @@ export default class Parallax extends Phaser.Scene {
 
                 //check if in the green zone (only moves if in the GREEENNNN else u get punished w smaller steps)
                 if(inTheGreen){
-                    //parallax move bg
-                    this.farcity.tilePositionX += this.minStepSize;
-                    this.city.tilePositionX += this.minStepSize * 2;
-                    this.closecity.tilePositionX += this.minStepSize * 3;
-                    this.streetlights.tilePositionX += this.minStepSize * 4;
-                    this.sidewalk.tilePositionX += this.minStepSize * 4
-                    this.upSidewalk.tilePositionX += this.minStepSize * 4
-                    this.bushes.tilePositionX += this.minStepSize * 5
-
                     
+
                     
                     //run walk anim or jump which depends on right or left step
                     if(spaceTapped){
-                        this.player.setVelocityY(-1000);
+                        this.player.setVelocityY(-1000)
+                        this.layer.body.setVelocityX(-200)
+                        this.isJumping = true
+                        this.time.addEvent({
+                            delay: 2000,
+                            callback:() => {
+                                this.layer.body.setVelocityX(0)
+                                this.isJumping = false
+                            }
+                        })
 
                         console.log("space")
                         //move cracks
-                        this.layer.x -= this.minStepSize * 200
                     }
                     else if(this.nextStepIsRight) {
+                        this.isInStep = true
                         this.player.anims.play('right', true)
+
                         //change for the next step
                         this.nextStepIsRight = !this.nextStepIsRight
 
                         //move cracks
-                        this.layer.x -= this.minStepSize * 40
+                        this.layer.x -= 80
                     }
                     else {
+                        this.isInStep = true
                         this.player.anims.play('left', true)
                         //change for the nextStep
                         this.nextStepIsRight = !this.nextStepIsRight
 
                         //move cracks
-                        this.layer.x -= this.minStepSize * 40
+                        this.layer.x -= 80
                     }
 
                     this.time.addEvent({
-                        delay: 400,
+                        delay: (spaceTapped ? 2000 : 400),
                         callback: ()=>{
+                            this.isInStep = false
                             this.nextStepReady = true
-                            if(this.nextStepIsRight){
-                                this.slider.body.setVelocityX(-1 * this.sliderVelocity)
+                            if(!this.isOnDeathMsg){
+                                if(this.nextStepIsRight){
+                                    this.slider.body.setVelocityX(-1 * this.sliderVelocity)
 
+                                }
+                                else {
+                                    this.slider.body.setVelocityX(this.sliderVelocity)
+                                }  
                             }
-                            else {
-                                this.slider.body.setVelocityX(this.sliderVelocity)
-                            }                        
+                                                  
                         }
                     })
                 }
