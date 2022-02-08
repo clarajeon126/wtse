@@ -52,7 +52,7 @@ export default class Parallax extends Phaser.Scene {
     }
 
     create() {
-
+        
         //parallax bg images
         this.sky = this.add.tileSprite(96, 54, 0, 0,'sky');
         this.farcity = this.add.tileSprite(96, 54, 0, 0, 'farcity');
@@ -86,8 +86,9 @@ export default class Parallax extends Phaser.Scene {
         this.physics.add.existing(this.rightInvisWall, true)
         this.physics.add.existing(this.bottomInvisWall, true)
 
-        //player add and physics!
-        this.player = this.physics.add.sprite(20, 50, 'person');
+        //player add and physics! begin one tile away
+        this.player = this.physics.add.sprite(8, 0, 'person')
+        this.player.setOrigin(0,0)
         this.player.setBounce(0.2);
         this.player.setCollideWorldBounds(true);
 
@@ -100,20 +101,15 @@ export default class Parallax extends Phaser.Scene {
         //player animations
         this.anims.create({
             key: 'right',
-            frames: this.anims.generateFrameNumbers('person', {frames: [7,8,9]}),
+            frames: this.anims.generateFrameNumbers('person', {frames: [7,8]}),
             frameRate: 6,
             repeat: 0
         });
         this.anims.create({
             key: 'left',
-            frames: this.anims.generateFrameNumbers('person', { frames: [3,4,9] }),
+            frames: this.anims.generateFrameNumbers('person', { frames: [3,4] }),
             frameRate: 6,
             repeat: 0
-        });
-        this.anims.create({
-            key: 'still',
-            frames: [{ key: 'person', frame: 9 }],
-            frameRate: 20,
         });
 
         //cursor stuff so that it only detects the first click
@@ -132,7 +128,7 @@ export default class Parallax extends Phaser.Scene {
         //add texts
         this.wrongFootMsg = this.add.text(960, 540, "nope wrong foot lulz").setFontSize(40).setColor('red').setVisible(false)
         this.missedGreenMsg = this.add.text(960, 540, "yikes.. you missed. aim for the green zone!!").setFontSize(40).setColor('red').setVisible(false)
-
+        this.progreesText = this.add.text(1300, 100, "0/50 miles || 0%")
 
         this.showTextForASec = (text, delay) => {
             text.setVisible(true)
@@ -178,24 +174,71 @@ export default class Parallax extends Phaser.Scene {
         //add cracks
 
         //generate beginning crack display
-        var level = Array(26).fill(0)
+        var arr = Array(26).fill(0)
+        this.level = [arr]
 
-        var x = 0
+        var x = 4
 
         const percentOfCrack = 30
-        while(x < Array.length){
+        while(x < this.level[0].length){
             const ranNumYNCrack = Math.floor(Math.random() * (100)) + 1;
-            if(ranNumYNCrack <= 30){
-                //
+            console.log(ranNumYNCrack)
+            //30% of the time a tile gets a crack
+            if(ranNumYNCrack <= 15){
+                const doubleWidthOrNot = Math.floor(Math.random() * (20)) + 1
+
+                //20% of the time the crack will be double
+                if(doubleWidthOrNot <= 20){
+                    if(doubleWidthOrNot % 2 == 0){
+                        this.level[0][x] = 3
+                        this.level[0][x+1] = 4
+                    }
+                    else {
+                        this.level[0][x] = 5
+                        this.level[0][x] = 6
+                    }
+                    x += 2
+                }
+                else {
+                    if(ranNumYNCrack % 2 == 0){
+                        this.level[0][x] = 1
+                    }
+                    else {
+                        this.level[0][x] = 2
+                    }
+                    x += 1
+                }
+            }
+            else {
+                x+=1
             }
         }
-        
+
+        //so that player is 160 px
+        // this.player.setScale(6.666)
+        // this.player.body.updateFromGameObject()
+        console.log(this.level)
           // When loading from an array, make sure to specify the tileWidth and tileHeight
-          const map = this.make.tilemap({ data: level, tileWidth: 80, tileHeight: 220 });
-          const tiles = map.addTilesetImage("crack-tiles");
-          const layer = map.createLayer(0, tiles)
-          console.log(map)
+            this.map = this.make.tilemap({ data: this.level, tileWidth: 80, tileHeight: 220 });
+            this.tiles = this.map.addTilesetImage("crack-tiles");
+            this.layer = this.map.createLayer(0, this.tiles, 0, 740)
+            // this.layer.setCollisionBetween(1,9)
+            // this.physics.add.collider(this.player, this.layer, null, null, this);
+          console.log(this.map)
+
+          console.log(this.game.canvas.height)
+
+
+        this.isOnDeathMsg = false
+        this.physics.add.overlap(this.player, this.layer, function(thePlayer, tile) {
+
+            if(tile.index != 0){
+                console.log(tile.index)
+                this.game.isOnDeathMsg = true
+            }
+        });
     }
+
 
     
     update() {
@@ -203,8 +246,12 @@ export default class Parallax extends Phaser.Scene {
         //change this for the change in parallax "distance" will be changed when changing "step size"
 
         var correctStepTaken = "no"        
-
+        var spaceTapped = false
         
+        if(this.isOnDeathMsg){
+            console.log("DEAD")
+            return
+        }
         
         //to check if its the correct step
         if(Phaser.Input.Keyboard.JustDown(this.rightKey)){
@@ -224,6 +271,7 @@ export default class Parallax extends Phaser.Scene {
             }
         }
         else if(Phaser.Input.Keyboard.JustDown(this.spaceKey)){
+            spaceTapped = true
             correctStepTaken = "correct"
         }
 
@@ -262,22 +310,31 @@ export default class Parallax extends Phaser.Scene {
                     this.upSidewalk.tilePositionX += this.minStepSize * 4
                     this.bushes.tilePositionX += this.minStepSize * 5
 
-                    //move cracks
-                    this.crack1.x -= this.minStepSize * 40;
-
+                    
+                    
                     //run walk anim or jump which depends on right or left step
-                    if(Phaser.Input.Keyboard.JustDown(this.spaceKey)){
+                    if(spaceTapped){
                         this.player.setVelocityY(-1000);
+
+                        console.log("space")
+                        //move cracks
+                        this.layer.x -= this.minStepSize * 200
                     }
                     else if(this.nextStepIsRight) {
                         this.player.anims.play('right', true)
                         //change for the next step
                         this.nextStepIsRight = !this.nextStepIsRight
+
+                        //move cracks
+                        this.layer.x -= this.minStepSize * 40
                     }
                     else {
                         this.player.anims.play('left', true)
                         //change for the nextStep
                         this.nextStepIsRight = !this.nextStepIsRight
+
+                        //move cracks
+                        this.layer.x -= this.minStepSize * 40
                     }
 
                     this.time.addEvent({
