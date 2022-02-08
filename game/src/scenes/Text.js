@@ -26,7 +26,6 @@ export default class Text extends Phaser.Scene
     {
         console.log("text created")
         //add cracks
-
         // const level = [
         //     [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0 ],
         //     [  0,   1,   2,   3,   0,   0,   0,   1,   2,   3,   0 ],

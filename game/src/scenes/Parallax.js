@@ -176,11 +176,19 @@ export default class Parallax extends Phaser.Scene {
         });
 
         //add cracks
-        this.crack1 = this.add.image(960, 850,'crack1')
-        
-        const level = [
-            [  1, 1,   0,   0,   0,   0,   0,   0,   0,   0,   0 ]
-          ];
+
+        //generate beginning crack display
+        var level = Array(26).fill(0)
+
+        var x = 0
+
+        const percentOfCrack = 30
+        while(x < Array.length){
+            const ranNumYNCrack = Math.floor(Math.random() * (100)) + 1;
+            if(ranNumYNCrack <= 30){
+                //
+            }
+        }
         
           // When loading from an array, make sure to specify the tileWidth and tileHeight
           const map = this.make.tilemap({ data: level, tileWidth: 80, tileHeight: 220 });
@@ -282,7 +290,8 @@ export default class Parallax extends Phaser.Scene {
                             }
                             else {
                                 this.slider.body.setVelocityX(this.sliderVelocity)
-                            }                        }
+                            }                        
+                        }
                     })
                 }
                 else {

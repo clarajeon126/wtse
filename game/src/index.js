@@ -16,7 +16,7 @@ const C = {
             debug: true
         }
     },
-    scene: [Intro, Parallax, Text]
+    scene: [Parallax]
 };
 
 // var C = {
@@ -97,3 +97,5 @@ window.onload = () => {
 //   function update(time, delta) {
 //     // Runs once per frame for the duration of the scene
 //   }
+
+
