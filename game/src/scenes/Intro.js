@@ -88,14 +88,17 @@ export default class Intro extends Phaser.Scene {
 
         //when clicking
         this.nextbutton.on('pointerdown', ()=> {
-            
-         this.nextbutton.anims.play('click', true);
-            this.updateText(++i);
-
+            this.nextbutton.anims.play('click', true)
+            //this.anims.play('click', true),
+               this.updateText(++i);
+               this.changeFrame(true);
+        
+           
             if( i == 9){
                 this.scene.start('Parallax');
                 console.log('heyo');
             }
+            
             
         });
 
