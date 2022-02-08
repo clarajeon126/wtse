@@ -238,7 +238,7 @@ export default class Parallax extends Phaser.Scene {
                     this.bushes.tilePositionX += this.minStepSize * 5
 
                     //move cracks
-                    this.crack1.x -= minStepSize * 40;
+                    this.crack1.x -= this.minStepSize * 40;
 
                     //run walk anim or jump which depends on right or left step
                     if(Phaser.Input.Keyboard.JustDown(this.spaceKey)){
