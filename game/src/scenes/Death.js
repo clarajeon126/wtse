@@ -12,10 +12,14 @@ export default class Death extends Phaser.Scene
     constructor ()
     {
         super({
-            key: 'Death'
+            key: 'Death',
         });
     }
 
+    init(data) {
+        console.log('init', data);
+        this.time = data.time;
+    }
     preload ()
     {
         this.load.image('baseboard', baseboard)
@@ -30,13 +34,14 @@ export default class Death extends Phaser.Scene
       
     create ()
     {
+        console.log(this.time)
         this.greyBg = this.add.rectangle(96,54, 192, 108, "0x000000", .5)
         //death message
         this.baseboard = this.add.image(96, 54, 'baseboard').setVisible(true)
 
         this.deadTitle = this.add.bitmapText(960, 220, 'font', "R.I.P.").setFontSize(70).setMaxWidth(900).setCenterAlign().setOrigin(0.5,0.5)
 
-        this.deathText = this.add.bitmapText(750, 500, 'font', 'your mums back broke \n \n OH NO!').setFontSize(40).setMaxWidth(400)
+        this.deathText = this.add.bitmapText(750, 500, 'font', 'your mums back broke \n \n OH NO! \n \n' + "your time: " + this.time.toFixed(1)).setFontSize(40).setMaxWidth(400)
 
         this.mum = this.add.image(120,55, 'mum')
         //scales every game object this is actually so big brain im godly 😎

@@ -48,6 +48,7 @@ export default class Parallax extends Phaser.Scene {
         this.load.image('crack3', crack3)
         this.load.image('crack4', crack4)
 
+        this.load.tilemapCSV('csv', "src/assets/crackmap.csv")
 
         this.load.image("crack-tiles", cracktilemap);
 
@@ -184,61 +185,12 @@ export default class Parallax extends Phaser.Scene {
             } 
         });
 
-        
 
-        //generate beginning crack display
-        var arr = Array(26).fill(0)
-        this.level = [arr]
-
-        var x = 4
-
-        const percentOfCrack = 30
-        while(x < this.level[0].length){
-            const ranNumYNCrack = Math.floor(Math.random() * (100)) + 1;
-            console.log(ranNumYNCrack)
-            //30% of the time a tile gets a crack
-            if(ranNumYNCrack <= 15){
-                const doubleWidthOrNot = Math.floor(Math.random() * (20)) + 1
-
-                //20% of the time the crack will be double
-                if(doubleWidthOrNot <= 20){
-                    if(doubleWidthOrNot % 2 == 0){
-                        this.level[0][x] = 3
-                        this.level[0][x+1] = 4
-                    }
-                    else {
-                        this.level[0][x] = 5
-                        this.level[0][x+1] = 6
-                    }
-                    x += 2
-                }
-                else {
-                    if(ranNumYNCrack % 2 == 0){
-                        this.level[0][x] = 1
-                    }
-                    else {
-                        this.level[0][x] = 2
-                    }
-                    x += 1
-                }
-            }
-            else {
-                x+=1
-            }
-        }
-
-
-        console.log(this.level)
-        // When loading from an array, make sure to specify the tileWidth and tileHeight
-        this.map = this.make.tilemap({ data: this.level, tileWidth: 80, tileHeight: 220 });
+        // make tile map from csv
+        this.map = this.make.tilemap({ key: 'csv', tileWidth: 80, tileHeight: 220 });
         this.tiles = this.map.addTilesetImage("crack-tiles");
         this.layer = this.map.createLayer(0, this.tiles, 0, 740)
         
-        // this.layer.setCollisionBetween(1,9)
-        // this.physics.add.collider(this.player, this.layer, null, null, this);
-        console.log(this.map)
-
-        console.log(this.game.canvas.height)
 
         //player add and physics! begin one tile away
         this.player = this.physics.add.sprite(100, 0, 'person')
@@ -246,13 +198,10 @@ export default class Parallax extends Phaser.Scene {
         this.player.setScale(8.33) //200(width) x 416.66
         this.player.setCollideWorldBounds(true);
 
-        //resize player
-        
-
         this.physics.add.collider(this.sidewalk, this.player)  
 
+        //variables from the smooth move of parallax bg
         this.isJumping = false
-
         this.isInStep = false
 
         //if dead will change this variable and wont run any of the stuff inside update
@@ -262,8 +211,9 @@ export default class Parallax extends Phaser.Scene {
                 var tilesPlayerIsTouching = this.layer.getTilesWithinWorldXY(100,740, 200, 220)
                 tilesPlayerIsTouching.every((tile) => {
                     if(tile.index != 0){
+                        //died!!!
                         this.isOnDeathMsg = true
-                        this.scene.launch("Death")
+                        this.scene.launch("Death", { time: this.currentTime })
                         return false;
                     }
                     return true;
@@ -271,9 +221,21 @@ export default class Parallax extends Phaser.Scene {
             }
         }, null, this);
 
-        this.physics.add.existing(this.layer)
 
+        //so that cracks dont collapse and fall :D
+        this.physics.add.existing(this.layer)
         this.physics.add.collider(this.layer, this.layerSupport)
+
+        this.currentTime = 0.0
+        this.start1msTimer = () => {
+            this.time.addEvent({
+                delay:100, 
+                callback: () => {
+                    this.currentTime += .1
+                    this.start1msTimer()
+            }})
+        }
+        this.start1msTimer()
     }
 
 
@@ -281,10 +243,10 @@ export default class Parallax extends Phaser.Scene {
     update() {
 
         //change this for the change in parallax "distance" will be changed when changing "step size"
-
         var correctStepTaken = "no"        
         var spaceTapped = false
         
+        this.progressText.setText(this.currentTime.toFixed(1))
         if(this.isOnDeathMsg){
             console.log("DEAD")
             return
@@ -401,17 +363,20 @@ export default class Parallax extends Phaser.Scene {
                     }
 
                     this.time.addEvent({
-                        delay: 400,
+                        delay: (spaceTapped ? 2000 : 400),
                         callback: ()=>{
                             this.isInStep = false
                             this.nextStepReady = true
-                            if(this.nextStepIsRight){
-                                this.slider.body.setVelocityX(-1 * this.sliderVelocity)
+                            if(!this.isOnDeathMsg){
+                                if(this.nextStepIsRight){
+                                    this.slider.body.setVelocityX(-1 * this.sliderVelocity)
 
+                                }
+                                else {
+                                    this.slider.body.setVelocityX(this.sliderVelocity)
+                                }  
                             }
-                            else {
-                                this.slider.body.setVelocityX(this.sliderVelocity)
-                            }                        
+                                                  
                         }
                     })
                 }
