@@ -18,6 +18,8 @@ import crack4 from "../assets/passets/crack4.png"
 import slider from "../assets/slider.png"
 import person from "../assets/passets/peoplesprite.png"
 
+import cracktilemap from "../assets/cracktilemap.png"
+
 export default class Parallax extends Phaser.Scene {
 
     constructor(){
@@ -42,6 +44,9 @@ export default class Parallax extends Phaser.Scene {
         this.load.image('crack2', crack2)
         this.load.image('crack3', crack3)
         this.load.image('crack4', crack4)
+
+        this.load.image("crack-tiles", cracktilemap);
+
         this.load.spritesheet('person', person, { frameWidth: 24, frameHeight: 50});
 
     }
@@ -61,8 +66,7 @@ export default class Parallax extends Phaser.Scene {
         //the up sidewalk
         this.upSidewalk = this.add.tileSprite(96, 77, 0, 0,'upSidewalk')
 
-        //add cracks
-        this.crack1 = this.add.image(96, 84,'crack1')
+        
 
         //parallax bg image in front of the sidewalk nonsense
         this.streetlights = this.add.tileSprite(96, 54, 0, 0, 'streetlights');
@@ -142,7 +146,7 @@ export default class Parallax extends Phaser.Scene {
 
         //difficulty changers
         this.minStepSize =2
-        this.sliderVelocity = 1000
+        this.sliderVelocity = 1200
 
         //scales every game object this is actually so big brain im godly 😎
         this.group = this.add.group(this.children.list)
@@ -170,6 +174,19 @@ export default class Parallax extends Phaser.Scene {
                 child.body.updateFromGameObject()
             } 
         });
+
+        //add cracks
+        this.crack1 = this.add.image(960, 850,'crack1')
+        
+        const level = [
+            [  1, 1,   0,   0,   0,   0,   0,   0,   0,   0,   0 ]
+          ];
+        
+          // When loading from an array, make sure to specify the tileWidth and tileHeight
+          const map = this.make.tilemap({ data: level, tileWidth: 80, tileHeight: 220 });
+          const tiles = map.addTilesetImage("crack-tiles");
+          const layer = map.createLayer(0, tiles)
+          console.log(map)
     }
 
     
