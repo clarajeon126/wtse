@@ -59,7 +59,7 @@ export default class Parallax extends Phaser.Scene {
         this.physics.add.existing(this.sidewalk, true); 
 
         //the up sidewalk
-        this.upSidewalk = this.add.image(96, 77, 'upSidewalk')
+        this.upSidewalk = this.add.tileSprite(96, 77, 0, 0,'upSidewalk')
 
         //add cracks
         this.crack1 = this.add.image(96, 84,'crack1')
@@ -120,6 +120,29 @@ export default class Parallax extends Phaser.Scene {
 
         //so that u cant constantly press l/r buttons, its used in the update stuff
         this.nextStepReady = true
+        
+        //steps always begin from right step
+        this.nextStepIsRight = true
+
+
+        //add texts
+        this.wrongFootMsg = this.add.text(960, 540, "nope wrong foot lulz").setFontSize(40).setColor('red').setVisible(false)
+        this.missedGreenMsg = this.add.text(960, 540, "yikes.. you missed. aim for the green zone!!").setFontSize(40).setColor('red').setVisible(false)
+
+
+        this.showTextForASec = (text, delay) => {
+            text.setVisible(true)
+            this.time.addEvent({
+                delay: delay,
+                callback: ()=>{
+                    text.setVisible(false)
+                }
+            })
+        }
+
+        //difficulty changers
+        this.minStepSize =2
+        this.sliderVelocity = 1000
 
         //scales every game object this is actually so big brain im godly 😎
         this.group = this.add.group(this.children.list)
@@ -128,11 +151,20 @@ export default class Parallax extends Phaser.Scene {
             //scale everything except for graphics
             if(index != 0){
                 console.log(child.type)
-                child.setScale(10, 10)  
-                child.setX(child.x * 10)
-                child.setY(child.y * 10)
-            }
 
+                //cause if u scale text it looks mega huge
+                if(child.type != "Text"){
+                    child.setScale(10, 10)
+                    child.setX(child.x * 10)
+                    child.setY(child.y * 10)
+                }
+                else {
+
+                    //texts rnt centered in the middle but the "center" is top left so change that to middle
+                    child.setOrigin(0.5, 0.5)
+                }
+                
+            }
             //updates the physics body for all objects w physics so that the physics bodys rnt mini sized yk
             if(child.body){
                 child.body.updateFromGameObject()
@@ -144,107 +176,123 @@ export default class Parallax extends Phaser.Scene {
     update() {
 
         //change this for the change in parallax "distance" will be changed when changing "step size"
-        var minStepSize = 2
+
+        var correctStepTaken = "no"        
+
+        
+        
+        //to check if its the correct step
+        if(Phaser.Input.Keyboard.JustDown(this.rightKey)){
+            if(this.nextStepIsRight){
+                correctStepTaken = "correct"
+            }
+            else {
+                correctStepTaken = "wrong"
+            }
+        }
+        else if( Phaser.Input.Keyboard.JustDown(this.leftKey)){
+            if(!this.nextStepIsRight){
+                correctStepTaken = "correct"
+            }
+            else {
+                correctStepTaken = "wrong"
+            }
+        }
+        else if(Phaser.Input.Keyboard.JustDown(this.spaceKey)){
+            correctStepTaken = "correct"
+        }
+
 
         //when space, right, or left key is tapped
-        if (Phaser.Input.Keyboard.JustDown(this.rightKey) ||
-            Phaser.Input.Keyboard.JustDown(this.leftKey) ||
-            Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+        if (correctStepTaken == "correct") {
             console.log("space left or right tapped")
 
+            
             //only run if next step is ready (in order to stop continuous key spams)
             if(this.nextStepReady) {
 
                 //set to false; will be changed after time delay
                 this.nextStepReady = false
                 
-                //check if in the green zone
-
-                //parallax move bg
-                this.farcity.tilePositionX += minStepSize;
-                this.city.tilePositionX += minStepSize * 2;
-                this.closecity.tilePositionX += minStepSize * 3;
-                this.streetlights.tilePositionX += minStepSize * 4;
-                this.crack1.x -= minStepSize * 4;
-                this.bushes.tilePositionX += minStepSize * 5
-
                 //stop slider
                 this.slider.body.setVelocityX(0)
+
+                //setting inthegreen variable
+                var inTheGreen = true
                 var xPos = this.slider.body.x
-
-
-                //7 px away from very center
-                if(xPos >103 ||xPos < 85){
-                    console.log("MISSED LLLLLL")
+                //7(0 cause of 10x scale) px away from very center; center i 92 pixel
+                if(xPos > 1030 || xPos < 850){
+                    inTheGreen = false
                 }
-                console.log("right walk " + xPos)
-                this.time.addEvent({
-                    delay: 400,
-                    callback: ()=>{
-                        this.nextStepReady = true
-                        this.slider.body.setVelocityX(750)
-                    }
-                })
-                // this.morehills.tilePositionX += 1.6;
-                // this.road.tilePositionX += 3.2;
-        
+                
 
-                // //player.x +=2;
-                this.player.anims.play('right',true)
+                //check if in the green zone (only moves if in the GREEENNNN else u get punished w smaller steps)
+                if(inTheGreen){
+                    //parallax move bg
+                    this.farcity.tilePositionX += this.minStepSize;
+                    this.city.tilePositionX += this.minStepSize * 2;
+                    this.closecity.tilePositionX += this.minStepSize * 3;
+                    this.streetlights.tilePositionX += this.minStepSize * 4;
+                    this.sidewalk.tilePositionX += this.minStepSize * 4
+                    this.upSidewalk.tilePositionX += this.minStepSize * 4
+                    this.bushes.tilePositionX += this.minStepSize * 5
+
+                    //move cracks
+                    this.crack1.x -= minStepSize * 40;
+
+                    //run walk anim or jump which depends on right or left step
+                    if(Phaser.Input.Keyboard.JustDown(this.spaceKey)){
+                        this.player.setVelocityY(-1000);
+                    }
+                    else if(this.nextStepIsRight) {
+                        this.player.anims.play('right', true)
+                        //change for the next step
+                        this.nextStepIsRight = !this.nextStepIsRight
+                    }
+                    else {
+                        this.player.anims.play('left', true)
+                        //change for the nextStep
+                        this.nextStepIsRight = !this.nextStepIsRight
+                    }
+
+                    this.time.addEvent({
+                        delay: 400,
+                        callback: ()=>{
+                            this.nextStepReady = true
+                            if(this.nextStepIsRight){
+                                this.slider.body.setVelocityX(-1 * this.sliderVelocity)
+
+                            }
+                            else {
+                                this.slider.body.setVelocityX(this.sliderVelocity)
+                            }                        }
+                    })
+                }
+                else {
+                    console.log("MISSED LLLLLL")
+                    this.showTextForASec(this.missedGreenMsg, 2000)
+                    this.time.addEvent({
+                        delay: 400,
+                        callback: ()=>{
+                            this.nextStepReady = true
+                            if(this.nextStepIsRight){
+                                this.slider.body.setVelocityX(-1 * this.sliderVelocity)
+
+                            }
+                            else {
+                                this.slider.body.setVelocityX(this.sliderVelocity)
+                            }                        }
+                    })
+                }
+                
+                
             }
         }
-            //when left key pressed
-        else if (Phaser.Input.Keyboard.JustDown(this.leftKey)) {
-
-            if(this.nextStepReady) {
-                this.nextStepReady = false
-
-                this.farcity.tilePositionX += minStepSize;
-                this.city.tilePositionX += minStepSize * 2;
-                this.closecity.tilePositionX += minStepSize * 4;
-                this.streetlights.tilePositionX += minStepSize * 8;
-                this.bushes.tilePositionX += minStepSize * 16
-                var xPos = this.slider.body.x
-    
-    
-                //7 px away from very center
-                if(xPos > 103 || xPos < 85){
-                    console.log("MISSED LLLLLL")
-                }
-                //stop slider
-                this.slider.body.setVelocityX(0)
-                console.log("left walk " + this.slider.body.x)
-                this.time.addEvent({
-                    delay: 400,
-                    callback: ()=>{
-                        this.nextStepReady = true
-                        this.slider.body.setVelocityX(-750)
-                    }
-                })
-    
-                this.player.anims.play('left', true)
-            }
-            
+        else if (correctStepTaken == "wrong") {
+            this.showTextForASec(this.wrongFootMsg, 400)
+        }
+        else if (correctStepTaken == "no") {
 
         }
-        else if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
-            this.player.setVelocityY(-1000);
-            this.slider.body.setVelocityX(0)
-            this.crack1.x -= minStepSize * 20;
-
-        }
-        else if(this.cursors.up.isDown) {
-
-            this.scene.start('Intro')
-            // if(!(this.player.anims.currentAnim === 'right')){
-            //     console.log("idk")
-            //     this.player.anims.play('still', true)
-            // }
-
-        }
-        else {
-            this.player.setVelocityX(0);
-        }
-
     }
 }
