@@ -40,17 +40,19 @@ export default class Intro extends Phaser.Scene {
         this.nextbutton = this.physics.add.staticSprite(120, 80, 'nextbutton').setInteractive();
         
 
-        var text = ["welcome to where the sidewalk ends",
-        "in this game, you'll be controlling a lanky biped who's on a mission!",
+        var text = ["welcome to \n\nwhere the sidewalk ends",
+        "in this game, you'll be controlling \r\n a lanky biped who's on a mission!",
         "what this mission is you ask?",
         "of course to tell your mom [SOMETHING]",
         "press the left and right keys to time your steps",
-        "the better timed your steps the faster you can make it home!",
+        "the better timed your steps, the faster you can make it home!",
         "however, as you walk along the sidewalk, beware of cracks!",
         "make sure to jump over them with the space bar",
         "...who knows what'll happen otherwise"];
 
-        this.infotext = this.add.text(980,540,text[i]);
+        this.infotext = this.add.bitmapText(50,40, 'font',text[i]).setFontSize(4)//.setOrigin(96, 54);
+
+
 
         this.anims.create({
             key: 'hover',
@@ -68,7 +70,7 @@ export default class Intro extends Phaser.Scene {
 
         this.anims.create({
             key: 'click',
-            frames: this.anims.generateFrameNumbers('nextbutton', { frames: [2] }),
+            frames: this.anims.generateFrameNumbers('nextbutton', { frames: [2,0] }),
             frameRate: 6,
             repeat: 0
         });
@@ -85,13 +87,19 @@ export default class Intro extends Phaser.Scene {
         });
 
         //when clicking
-        this.nextbutton.on('pointerdown', ()=> 
+        this.nextbutton.on('pointerdown', ()=> {
             
-         //this.anims.play('click', true),
-            this.updateText(++i),
-            this.changeFrame(true),
+         this.nextbutton.anims.play('click', true);
+            this.updateText(++i);
 
-        );
+            if( i == 9){
+                this.scene.start('Parallax');
+                console.log('heyo');
+            }
+            
+        });
+
+        
 
 
 
@@ -166,5 +174,7 @@ export default class Intro extends Phaser.Scene {
         this.infotext.setText(text[i]);
     }
     update() {
+
+        
         }
 }
