@@ -4,7 +4,6 @@ import nextbutton from "../assets/passets/nextbutton.png";
 
 import cracktilemap from "../assets/cracktilemap.png"
 
-import mario from "../assets/mario_tiles.png"
 export default class Text extends Phaser.Scene
 {
     
