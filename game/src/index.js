@@ -3,6 +3,8 @@ import Game from './scenes/Game';
 import Parallax from './scenes/Parallax';
 import Intro from './scenes/Intro';
 import Text from './scenes/Text';
+import Death from './scenes/Death';
+
 const C = {
     type: Phaser.CANVAS,
     parent: 'phaser-example',
@@ -17,7 +19,7 @@ const C = {
             debug: true
         }
     },
-    scene: [Parallax]
+    scene: [Parallax, Death, Intro]
 };
 
 // var C = {
