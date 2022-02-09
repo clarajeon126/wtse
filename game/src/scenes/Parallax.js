@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 
+//citynight
 import bushes from "../assets/passets/bushes.png";
 import city from "../assets/passets/city.png";
 import closecity from "../assets/passets/closecity.png";
@@ -9,6 +10,42 @@ import sky from "../assets/passets/sky.png";
 import streetlights from "../assets/passets/streetlights.png";
 import gradient from "../assets/passets/gradientlight.png";
 import upSidewalk from "../assets/passets/sidewalkbehind.png";
+
+//cityday
+import cityskyday from "../assets/passets/cityskyday.png";
+import farcityday from "../assets/passets/farcityday.png";
+import cityday from "../assets/passets/cityday.png";
+import closecityday from "../assets/passets/closecityday.png";
+import streetlightsday from "../assets/passets/streetlightsday.png";
+import bushesday from "../assets/passets/bushesday.png";
+
+//mtn day
+import mtnskyday from "../assets/passets/mtnskyday.png";
+import mtnmtnday from "../assets/passets/mtnmtnday.png";
+import mtnfartreeday from "../assets/passets/mtnfartreeday.png";
+import mtnclosetreeday from "../assets/passets/mtnclosetreeday.png";
+import mtnfarbushday from "../assets/passets/mtnfarbushday.png";
+import mtnclosebushday from "../assets/passets/mtnclosebushday.png";
+
+//mtn night
+import mtnskynight from "../assets/passets/mtnskynight.png";
+import mtnmtnnight from "../assets/passets/mtnmtnnight.png";
+import mtnfartreenight from "../assets/passets/mtnfartreenight.png";
+import mtnclosetreenight from "../assets/passets/mtnclosetreenight.png";
+import mtnfarbushnight from "../assets/passets/mtnfarbushnight.png";
+import mtnclosebushnight from "../assets/passets/mtnclosebushnight.png";
+
+import endscreen from "../assets/passets/endscreen.png";
+
+//neigborhood
+import nhsky from "../assets/passets/nhsky.png";
+import nhbg1 from "../assets/passets/nhbg1.png";
+import nhbg2 from "../assets/passets/nhbg2.png";
+import nhbg3 from "../assets/passets/nhbg3.png";
+import nhclosebush from "../assets/passets/nhclosebush.png";
+import nhfarbush from "../assets/passets/nhfarbush.png"; 
+
+
 
 import crack1 from "../assets/passets/crack1.png"
 import crack2 from "../assets/passets/crack2.png"
@@ -34,20 +71,56 @@ export default class Parallax extends Phaser.Scene {
     preload() {
 
         //load all the assets :DD
-        this.load.image('bushes', bushes);
+        this.load.image('sky', sky);
+        this.load.image('farcity', farcity);
         this.load.image('city', city);
         this.load.image('closecity', closecity);
-        this.load.image('farcity', farcity);
+        this.load.image('streetlights', streetlights);
+        this.load.image('bushes', bushes);
+
         this.load.image('sidewalk', sidewalk);
         this.load.image('upSidewalk', upSidewalk)
-        this.load.image('sky', sky);
-        this.load.image('streetlights', streetlights);
+        
+        
+
         this.load.image('gradient', gradient)
         this.load.image('slider', slider)
         this.load.image('crack1', crack1)
         this.load.image('crack2', crack2)
         this.load.image('crack3', crack3)
         this.load.image('crack4', crack4)
+
+        //citydayassets
+        this.load.image('cityskyday', cityskyday);
+        this.load.image('farcityday', farcityday);
+        this.load.image('cityday', cityday);
+        this.load.image('closecityday', closecityday);
+        this.load.image('streetlightsday', streetlightsday);
+        this.load.image('bushesday', bushesday);
+
+        //mtn day assets
+        this.load.image("mtnskyday", mtnskyday);
+        this.load.image("mtnmtnday", mtnmtnday);
+        this.load.image("mtnfartreeday", mtnfartreeday);
+        this.load.image("mtnclosetreeday", mtnclosetreeday);
+        this.load.image("mtnfarbushday", mtnfarbushday);
+        this.load.image("mtnclosebushday", mtnclosebushday);
+
+        //mtn night assets
+        this.load.image("mtnskynight", mtnskynight);
+        this.load.image("mtnmtnnight", mtnmtnnight);
+        this.load.image("mtnfartreenight", mtnfartreenight);
+        this.load.image("mtnclosetreenight", mtnclosetreenight);
+        this.load.image("mtnfarbushnight", mtnfarbushnight);
+        this.load.image("mtnclosebushnight", mtnclosebushnight);
+
+        //neigborhood
+        this.load.image("nhsky", nhsky);
+        this.load.image("nhbg1", nhbg1);
+        this.load.image("nhbg2", nhbg2);
+        this.load.image("nhbg3", nhbg3);
+        this.load.image("nhfarbush", nhfarbush);
+        this.load.image("nhclosebush", nhclosebush);
 
         //csv that has the map created
         this.load.tilemapCSV('csv', "src/assets/easy.csv")
@@ -74,10 +147,10 @@ export default class Parallax extends Phaser.Scene {
         this.level = 1
         this.penalty = 0
         //parallax bg images
-        this.sky = this.add.tileSprite(96, 54, 0, 0,'sky');
-        this.farcity = this.add.tileSprite(96, 54, 0, 0, 'farcity');
-        this.city = this.add.tileSprite(96, 54, 0, 0, 'city');
-        this.closecity = this.add.tileSprite(96, 54, 0, 0, 'closecity');
+        this.sky = this.add.tileSprite(96, 54, 0, 0,'mtnskyday');
+        this.farcity = this.add.tileSprite(96, 54, 0, 0, 'mtnmtnday');
+        this.city = this.add.tileSprite(96, 54, 0, 0, 'mtnfartreeday');
+        this.closecity = this.add.tileSprite(96, 54, 0, 0, 'mtnclosetreeday');
 
         //sidewalk under (the one that has the physics)
         this.sidewalk = this.add.tileSprite(96, 88, 0,0, 'sidewalk')
@@ -87,8 +160,8 @@ export default class Parallax extends Phaser.Scene {
         this.upSidewalk = this.add.tileSprite(96, 77, 0, 0,'upSidewalk')
 
         //parallax bg image in front of the sidewalk nonsense
-        this.streetlights = this.add.tileSprite(96, 54, 0, 0, 'streetlights');
-        this.bushes = this.add.tileSprite(96, 54, 0, 0, 'bushes');
+        this.streetlights = this.add.tileSprite(96, 54, 0, 0, 'mtnfarbushday');
+        this.bushes = this.add.tileSprite(96, 54, 0, 0, 'mtnclosebushday');
 
         //slider stuff + slider physics
         this.gradiant = this.add.image(96, 95, 'gradient')
@@ -303,7 +376,7 @@ export default class Parallax extends Phaser.Scene {
             //correct the level
             this.level += 1
             this.levelText.setText("level " + this.level)
-
+            //mtnday
             var newSky = ""
             var new3Back = ""
             var new2Back = ""
@@ -316,40 +389,44 @@ export default class Parallax extends Phaser.Scene {
             this.newLevelTipShowing = true
 
             //change images depending on level
+            //mtnnight
             if(this.level == 2){
-                newSky = ""
-                new3Back = ""
-                new2Back = ""
-                new1Back = ""
-                new2Front = ""
-                new1Front = ""
+                newSky = "mtnskynight"
+                new3Back = "mtnmtnnight"
+                new2Back = "mtnfartreenight"
+                new1Back = "mtnclosetreenight"
+                new2Front = "mtnfarbushnight"
+                new1Front = "mtnclosebushnight"
                 this.sliderVelocity = 1200
             }
+            //cityday
             else if(level == 3){
-                newSky = ""
-                new3Back = ""
-                new2Back = ""
-                new1Back = ""
-                new2Front = ""
-                new1Front = ""
+                newSky = "cityskyday"
+                new3Back = "farcityday"
+                new2Back = "cityday"
+                new1Back = "closecityday"
+                new2Front = "streetlightsday"
+                new1Front = "bushesday"
                 this.sliderVelocity = 1225
             }
+            //citynight
             else if(level == 4){
-                newSky = ""
-                new3Back = ""
-                new2Back = ""
-                new1Back = ""
-                new2Front = ""
-                new1Front = ""
+                newSky = "sky"
+                new3Back = "farcity"
+                new2Back = "city"
+                new1Back = "closecity"
+                new2Front = "streetlights"
+                new1Front = "bushes"
                 this.sliderVelocity = 1250
             }
+            //neighborhood
             else if(level == 5){
-                newSky = ""
-                new3Back = ""
-                new2Back = ""
-                new1Back = ""
-                new2Front = ""
-                new1Front = ""
+                newSky = "nhsky"
+                new3Back = "nhbg1"
+                new2Back = "nhbg2"
+                new1Back = "nhbg3"
+                new2Front = "nhfarbush"
+                new1Front = "nhclosebush"
                 this.sliderVelocity = 1400
             }
 
