@@ -20,7 +20,7 @@ const C = {
             debug: true
         }
     },
-    scene: [Parallax, Death, Intro, Leaderboard]
+    scene: [Death, Parallax,  Intro, Leaderboard]
 };
 
 // var C = {

@@ -423,7 +423,7 @@ export default class Parallax extends Phaser.Scene {
                 this.sliderVelocity = 1200
             }
             //cityday
-            else if(level == 3){
+            else if(this.level == 3){
                 newSky = "cityskyday"
                 new3Back = "farcityday"
                 new2Back = "cityday"
@@ -433,7 +433,7 @@ export default class Parallax extends Phaser.Scene {
                 this.sliderVelocity = 1225
             }
             //citynight
-            else if(level == 4){
+            else if(this.level == 4){
                 newSky = "sky"
                 new3Back = "farcity"
                 new2Back = "city"
@@ -443,7 +443,7 @@ export default class Parallax extends Phaser.Scene {
                 this.sliderVelocity = 1250
             }
             //neighborhood
-            else if(level == 5){
+            else if(this.level == 5){
                 newSky = "nhsky"
                 new3Back = "nhbg1"
                 new2Back = "nhbg2"
