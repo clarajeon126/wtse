@@ -349,7 +349,7 @@ export default class Parallax extends Phaser.Scene {
                 new1Front = ""
                 this.sliderVelocity = 1200
             }
-            else if(level == 3){
+            else if(this.level == 3){
                 newSky = ""
                 new3Back = ""
                 new2Back = ""
@@ -358,7 +358,7 @@ export default class Parallax extends Phaser.Scene {
                 new1Front = ""
                 this.sliderVelocity = 1225
             }
-            else if(level == 4){
+            else if(this.level == 4){
                 newSky = ""
                 new3Back = ""
                 new2Back = ""
@@ -367,7 +367,7 @@ export default class Parallax extends Phaser.Scene {
                 new1Front = ""
                 this.sliderVelocity = 1250
             }
-            else if(level == 5){
+            else if(this.level == 5){
                 newSky = ""
                 new3Back = ""
                 new2Back = ""

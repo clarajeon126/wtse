@@ -31,6 +31,7 @@ export default class Intro extends Phaser.Scene {
     }
 
     create() {
+        
         let i = 0;
         this.online = false;
         this.text = ["welcome to \n\nwhere the sidewalk ends",
