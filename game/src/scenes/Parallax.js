@@ -84,7 +84,8 @@ export default class Parallax extends Phaser.Scene {
         this.load.image('sidewalk', sidewalk);
         this.load.image('upSidewalk', upSidewalk)
         
-        
+        this.load.image('statBg', statBg)
+        this.load.image('tipBg', tipBg)
 
         this.load.image('gradient', gradient)
         this.load.image('slider', slider)
