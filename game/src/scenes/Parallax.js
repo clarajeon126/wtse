@@ -18,8 +18,9 @@ import crack4 from "../assets/passets/crack4.png"
 import slider from "../assets/slider.png"
 import person from "../assets/passets/peoplesprite.png"
 
-import cracktilemap from "../assets/color.png"
+import cracktilemap from "../assets/cracktilemap.png"
 
+//font files
 import fontpng from "../assets/minecraftia.png";
 import fontxml from "../assets/minecraftia.xml";
 
@@ -48,8 +49,10 @@ export default class Parallax extends Phaser.Scene {
         this.load.image('crack3', crack3)
         this.load.image('crack4', crack4)
 
-        this.load.tilemapCSV('csv', "src/assets/crackmap.csv")
+        //csv that has the map created
+        this.load.tilemapCSV('csv', "src/assets/easy.csv")
 
+        //tiles w cracks index 0 is default
         this.load.image("crack-tiles", cracktilemap);
 
         this.load.spritesheet('person', person, { frameWidth: 24, frameHeight: 50});
@@ -63,7 +66,13 @@ export default class Parallax extends Phaser.Scene {
     }
 
     create() {
-        
+        this.tipTexts = ["welcome to where the sidewalk ends!\npress the left/right keys to walk and the A key to jump across small cracks",
+                        "the moving slider has gotten faster! \nmake sure to land it in the green in order to move!",
+                        "introducing,,, larger cracks! \nuse the S key to jump across medium cracks",
+                        "EVEN LARGER CRACKS?!?!? \nse the D key to jump across mega-huge cracks",
+                        "the ULTIMATE Challenge. \n Be Faster. Wittier. And Better. Good luck"]
+        this.level = 1
+        this.penalty = 0
         //parallax bg images
         this.sky = this.add.tileSprite(96, 54, 0, 0,'sky');
         this.farcity = this.add.tileSprite(96, 54, 0, 0, 'farcity');
@@ -76,8 +85,6 @@ export default class Parallax extends Phaser.Scene {
 
         //the up sidewalk
         this.upSidewalk = this.add.tileSprite(96, 77, 0, 0,'upSidewalk')
-
-        
 
         //parallax bg image in front of the sidewalk nonsense
         this.streetlights = this.add.tileSprite(96, 54, 0, 0, 'streetlights');
@@ -99,12 +106,10 @@ export default class Parallax extends Phaser.Scene {
 
         //make group w all parallax bg objs
         this.backgroundGroup = this.add.group([this.farcity, this.city, this.closecity, this.streetlights, this.bushes])
-        
 
         //so that tile layer doesnt fall of the game
         this.layerSupport = this.add.rectangle(96,97, 192,2, 0xff0000, 1)
         this.physics.add.existing(this.layerSupport, true)
-
         
         //add all the colliders
         this.physics.add.collider(this.bottomInvisWall, this.slider)    
@@ -131,19 +136,22 @@ export default class Parallax extends Phaser.Scene {
         this.leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-        //so that u cant constantly press l/r buttons, its used in the update stuff
-        this.nextStepReady = true
-        
-        //steps always begin from right step
-        this.nextStepIsRight = true
-
+        //a is small 1 tile jump; s is med 2 tile jump; d is large 3 tile jump
+        this.aKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
+        this.sKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
+        this.dKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
 
         //add texts
         this.wrongFootMsg = this.add.text(960, 540, "nope wrong foot lulz").setFontSize(40).setColor('red').setVisible(false)
         this.missedGreenMsg = this.add.text(960, 540, "yikes.. you missed. aim for the green zone!!").setFontSize(40).setColor('red').setVisible(false)
-        this.progressText = this.add.text(1300, 100, "0/50 miles || 0%")
         
-        
+        //info texts
+        this.progressText = this.add.text(1300, 100, "progress: " + "0%")
+        this.timeText = this.add.text(1300, 200, "time: " + "0s")
+        this.levelText = this.add.text(1300, 300, "level " + this.level)
+        this.penaltyText = this.add.text(1300, 400, "penalty: " + this.penalty)
+        this.newLevelTipText = this.add.text(960, 100, this.tipTexts[this.level - 1])
+
         this.showTextForASec = (text, delay) => {
             text.setVisible(true)
             this.time.addEvent({
@@ -154,9 +162,7 @@ export default class Parallax extends Phaser.Scene {
             })
         }
 
-        //difficulty changers
-        this.minStepSize =2
-        this.sliderVelocity = 1200
+        
 
         //scales every game object this is actually so big brain im godly 😎
         this.group = this.add.group(this.children.list)
@@ -192,7 +198,7 @@ export default class Parallax extends Phaser.Scene {
         this.layer = this.map.createLayer(0, this.tiles, 0, 740)
         
 
-        //player add and physics! begin one tile away
+        //player add and physics! begin one tile away created later cause not scaled
         this.player = this.physics.add.sprite(100, 0, 'person')
         this.player.setOrigin(0,0)
         this.player.setScale(8.33) //200(width) x 416.66
@@ -200,16 +206,43 @@ export default class Parallax extends Phaser.Scene {
 
         this.physics.add.collider(this.sidewalk, this.player)  
 
-        //variables from the smooth move of parallax bg
-        this.isJumping = false
-        this.isInStep = false
+        //variables
+            //variables from the smooth move of parallax bg
+            this.isJumping = false
+            this.isInStep = false
 
-        //if dead will change this variable and wont run any of the stuff inside update
-        this.isOnDeathMsg = false
+            //so that u cant constantly press l/r buttons, its used in the update stuff
+            this.nextStepReady = true
+            
+            //steps always begin from right step to control that the person doesnt do the same step twice
+            this.nextStepIsRight = true
+
+            //num of tiles traveled
+            this.distance = 1
+
+            this.newLevelTipShowing = true
+
+            //difficulty changer 1-1000; 2-1200; 3-1225; 4-1250; 5-1400
+            this.sliderVelocity = 1000
+
+            //if dead will change this variable and wont run any of the stuff inside update
+            this.isOnDeathMsg = false
+
+            this.isOnCongratsMsg = false
+
+            this.isOnPauseMsg = false
+
+            this.isOnTutorialMsg = true
+        
+        //is run when player touches sidewalk
         this.physics.add.overlap(this.player, this.layer, function(thePlayer, tile) {
+
+            //dont run if on the death msg and is currently in the air jumping
             if(!this.isOnDeathMsg && !this.isJumping){
+                //gets all the tiles (usually 3) that the player obj is touching
                 var tilesPlayerIsTouching = this.layer.getTilesWithinWorldXY(100,740, 200, 220)
                 tilesPlayerIsTouching.every((tile) => {
+                    //0 is the default base one w/o any cracks
                     if(tile.index != 0){
                         //died!!!
                         this.isOnDeathMsg = true
@@ -226,9 +259,10 @@ export default class Parallax extends Phaser.Scene {
         this.physics.add.existing(this.layer)
         this.physics.add.collider(this.layer, this.layerSupport)
 
+        //timer for scoring
         this.currentTime = 0.0
         this.start1msTimer = () => {
-            this.time.addEvent({
+            this.runningTimer = this.time.addEvent({
                 delay:100, 
                 callback: () => {
                     this.currentTime += .1
@@ -236,24 +270,104 @@ export default class Parallax extends Phaser.Scene {
             }})
         }
         this.start1msTimer()
+
+        this.minStepSize = .5
     }
 
-
-    
     update() {
 
         //change this for the change in parallax "distance" will be changed when changing "step size"
         var correctStepTaken = "no"        
-        var spaceTapped = false
+        var jumpTapped = "no"
         
-        this.progressText.setText(this.currentTime.toFixed(1))
+
+        //so functions rnt run from keyboard taps in diff scenes!
         if(this.isOnDeathMsg){
             console.log("DEAD")
             return
         }
 
+        //update progress text
+        var progressNum = ((this.distance + 1.0) / 250.00 ) * 100.00
+        this.progressText.setText("progress: " + progressNum.toFixed(2) + "%")
+
+        if(this.distance >= 249){
+            //user completed game
+            console.log("GAME COMPLETED LES GOOO")
+        }
+        //deal with level display changes
+        console.log(this.distance)
+        var notInCorrectLevel = (this.level) * 50 <= this.distance
+
+        if(notInCorrectLevel){
+            //correct the level
+            this.level += 1
+            this.levelText.setText("level " + this.level)
+
+            var newSky = ""
+            var new3Back = ""
+            var new2Back = ""
+            var new1Back = ""
+            var new2Front = ""
+            var new1Front = ""
+            
+            //display new text
+            this.newLevelTipText.setVisible(true).setText(this.tipTexts[this.level - 1])
+            this.newLevelTipShowing = true
+
+            //change images depending on level
+            if(this.level == 2){
+                newSky = ""
+                new3Back = ""
+                new2Back = ""
+                new1Back = ""
+                new2Front = ""
+                new1Front = ""
+                this.sliderVelocity = 1200
+            }
+            else if(level == 3){
+                newSky = ""
+                new3Back = ""
+                new2Back = ""
+                new1Back = ""
+                new2Front = ""
+                new1Front = ""
+                this.sliderVelocity = 1225
+            }
+            else if(level == 4){
+                newSky = ""
+                new3Back = ""
+                new2Back = ""
+                new1Back = ""
+                new2Front = ""
+                new1Front = ""
+                this.sliderVelocity = 1250
+            }
+            else if(level == 5){
+                newSky = ""
+                new3Back = ""
+                new2Back = ""
+                new1Back = ""
+                new2Front = ""
+                new1Front = ""
+                this.sliderVelocity = 1400
+            }
+
+            //change image depending on levelLl
+            this.sky.setTexture(newSky)
+            this.farcity.setTexture(new3Back)
+            this.city.setTexture(new2Back)
+            this.closecity.setTexture(new1Back)
+            this.streetlights.setTexture(new2Front)
+            this.bushes.setTexture(new1Front)
+        }
+
+        //to change timer text
+        this.timeText.setText("time: " + this.currentTime.toFixed(1) + "s")
+
+        //for nice smooth parallax bg moving
         if(this.isInStep) {
-            console.log('in STEEPPPP')
+            console.log('in STEPPPP')
             //parallax move bg
             this.minStepSize = .5
                     this.farcity.tilePositionX += this.minStepSize;
@@ -292,17 +406,30 @@ export default class Parallax extends Phaser.Scene {
                 correctStepTaken = "wrong"
             }
         }
-        else if(Phaser.Input.Keyboard.JustDown(this.spaceKey)){
-            spaceTapped = true
+        else if(Phaser.Input.Keyboard.JustDown(this.aKey)){
+            jumpTapped = "a"
+            correctStepTaken = "correct"
+        }
+        else if(Phaser.Input.Keyboard.JustDown(this.sKey)){
+            jumpTapped = "s"
+            correctStepTaken = "correct"
+        }
+        else if(Phaser.Input.Keyboard.JustDown(this.dKey)){
+            jumpTapped = "d"
             correctStepTaken = "correct"
         }
 
 
-        //when space, right, or left key is tapped
+        //when jump, right, or left key is tapped
         if (correctStepTaken == "correct") {
-            console.log("space left or right tapped")
+            console.log("jump left or right tapped")
 
-            
+            //if tip is shown make it go away
+            if(this.newLevelTipShowing){
+                this.newLevelTipShowing = false
+                this.newLevelTipText.setVisible(false)
+            }
+
             //only run if next step is ready (in order to stop continuous key spams)
             if(this.nextStepReady) {
 
@@ -315,6 +442,7 @@ export default class Parallax extends Phaser.Scene {
                 //setting inthegreen variable
                 var inTheGreen = true
                 var xPos = this.slider.body.x
+
                 //7(0 cause of 10x scale) px away from very center; center i 92 pixel
                 if(xPos > 1030 || xPos < 850){
                     inTheGreen = false
@@ -323,29 +451,40 @@ export default class Parallax extends Phaser.Scene {
 
                 //check if in the green zone (only moves if in the GREEENNNN else u get punished w smaller steps)
                 if(inTheGreen){
-                    
 
-                    
                     //run walk anim or jump which depends on right or left step
-                    if(spaceTapped){
+                    if(jumpTapped != "no"){
+                        console.log("jump")
+
                         this.player.setVelocityY(-1000)
-                        this.layer.body.setVelocityX(-200)
+
+                        if(jumpTapped == "a"){
+                            this.layer.body.setVelocityX(-160)
+                            this.distance += 4
+                        }
+                        else if (jumpTapped == "s"){
+                            this.layer.body.setVelocityX(-200)
+                            this.distance += 5
+                        }
+                        else if(jumpTapped == "d") {
+                            this.layer.body.setVelocityX(-240)
+                            this.distance += 6
+                        }
+
                         this.isJumping = true
                         this.time.addEvent({
                             delay: 2000,
                             callback:() => {
+                                
                                 this.layer.body.setVelocityX(0)
                                 this.isJumping = false
                             }
                         })
-
-                        console.log("space")
-                        //move cracks
                     }
                     else if(this.nextStepIsRight) {
                         this.isInStep = true
                         this.player.anims.play('right', true)
-
+                        this.distance += 1
                         //change for the next step
                         this.nextStepIsRight = !this.nextStepIsRight
 
@@ -355,6 +494,8 @@ export default class Parallax extends Phaser.Scene {
                     else {
                         this.isInStep = true
                         this.player.anims.play('left', true)
+                        this.distance += 1
+
                         //change for the nextStep
                         this.nextStepIsRight = !this.nextStepIsRight
 
@@ -363,7 +504,7 @@ export default class Parallax extends Phaser.Scene {
                     }
 
                     this.time.addEvent({
-                        delay: (spaceTapped ? 2000 : 400),
+                        delay: (jumpTapped != "no" ? 2000 : 400),
                         callback: ()=>{
                             this.isInStep = false
                             this.nextStepReady = true
@@ -375,10 +516,10 @@ export default class Parallax extends Phaser.Scene {
                                 else {
                                     this.slider.body.setVelocityX(this.sliderVelocity)
                                 }  
-                            }
-                                                  
+                            }                         
                         }
                     })
+
                 }
                 else {
                     console.log("MISSED LLLLLL")
