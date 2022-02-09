@@ -4,6 +4,7 @@ import Parallax from './scenes/Parallax';
 import Intro from './scenes/Intro';
 import Text from './scenes/Text';
 import Death from './scenes/Death';
+import Leaderboard from './scenes/Leaderboard';
 
 const C = {
     type: Phaser.CANVAS,
@@ -19,7 +20,7 @@ const C = {
             debug: true
         }
     },
-    scene: [Parallax, Death, Intro]
+    scene: [Parallax, Death, Intro, Leaderboard]
 };
 
 // var C = {

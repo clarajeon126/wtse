@@ -52,6 +52,9 @@ import crack2 from "../assets/passets/crack2.png"
 import crack3 from "../assets/passets/crack3.png"
 import crack4 from "../assets/passets/crack4.png"
 
+import statBg from "../assets/passets/stats.png"
+import tipBg from "../assets/passets/tipBg.png"
+
 import slider from "../assets/slider.png"
 import person from "../assets/passets/peoplesprite.png"
 
@@ -123,7 +126,7 @@ export default class Parallax extends Phaser.Scene {
         this.load.image("nhclosebush", nhclosebush);
 
         //csv that has the map created
-        this.load.tilemapCSV('csv', "src/assets/easy.csv")
+        this.load.tilemapCSV('csv', "src/assets/crackmap.csv")
 
         //tiles w cracks index 0 is default
         this.load.image("crack-tiles", cracktilemap);
@@ -146,6 +149,7 @@ export default class Parallax extends Phaser.Scene {
                         "the ULTIMATE Challenge. \n Be Faster. Wittier. And Better. Good luck"]
         this.level = 1
         this.penalty = 0
+
         //parallax bg images
         this.sky = this.add.tileSprite(96, 54, 0, 0,'mtnskyday');
         this.farcity = this.add.tileSprite(96, 54, 0, 0, 'mtnmtnday');
@@ -153,7 +157,7 @@ export default class Parallax extends Phaser.Scene {
         this.closecity = this.add.tileSprite(96, 54, 0, 0, 'mtnclosetreeday');
 
         //sidewalk under (the one that has the physics)
-        this.sidewalk = this.add.tileSprite(96, 88, 0,0, 'sidewalk')
+        this.sidewalk = this.add.tileSprite(96, 88, 0,0, 'sidewalk').setDepth(1)
         this.physics.add.existing(this.sidewalk, true); 
 
         //the up sidewalk
@@ -164,8 +168,8 @@ export default class Parallax extends Phaser.Scene {
         this.bushes = this.add.tileSprite(96, 54, 0, 0, 'mtnclosebushday');
 
         //slider stuff + slider physics
-        this.gradiant = this.add.image(96, 95, 'gradient')
-        this.slider = this.add.image(96, 90, 'slider')
+        this.gradiant = this.add.image(96, 95, 'gradient').setDepth(5)
+        this.slider = this.add.image(96, 90, 'slider').setDepth(6)
         this.physics.add.existing(this.slider)
         this.slider.body.setBounce(1, 0)
 
@@ -218,12 +222,24 @@ export default class Parallax extends Phaser.Scene {
         this.wrongFootMsg = this.add.text(960, 540, "nope wrong foot lulz").setFontSize(40).setColor('red').setVisible(false)
         this.missedGreenMsg = this.add.text(960, 540, "yikes.. you missed. aim for the green zone!!").setFontSize(40).setColor('red').setVisible(false)
         
+        this.statBg = this.add.image(140,2, "statBg")
+        this.statBg.setOrigin(0,0)
+
+        this.tipBg = this.add.image(20, 5, 'tipBg')
+        this.tipBg.setOrigin(0,0)
+
         //info texts
-        this.progressText = this.add.text(1300, 100, "progress: " + "0%")
-        this.timeText = this.add.text(1300, 200, "time: " + "0s")
-        this.levelText = this.add.text(1300, 300, "level " + this.level)
-        this.penaltyText = this.add.text(1300, 400, "penalty: " + this.penalty)
-        this.newLevelTipText = this.add.text(960, 100, this.tipTexts[this.level - 1])
+        this.progressText = this.add.bitmapText(1650, 50,'font', "progress: " + "0%")
+        this.timeText = this.add.bitmapText(1650, 90, 'font', "time: " + "0s")
+        this.levelText = this.add.bitmapText(1650, 130, 'font', "level " + this.level)
+        this.penaltyText = this.add.bitmapText(1650, 170, "font","penalty: " + this.penalty)
+        this.newLevelTipText = this.add.text(700, 110,this.tipTexts[this.level - 1]).setFontSize(28).setWordWrapWidth(800)
+        this.statTexts = this.add.group([this.progressText, this.timeText, this.levelText, this.penaltyText])
+        
+        this.statTexts.children.iterate((text, index) => {
+            text.setFontSize(25)
+            text.setOrigin(0,0)
+        })
 
         this.showTextForASec = (text, delay) => {
             text.setVisible(true)
@@ -246,7 +262,7 @@ export default class Parallax extends Phaser.Scene {
                 console.log(child.type)
 
                 //cause if u scale text it looks mega huge
-                if(child.type != "Text"){
+                if(child.type != "Text" && child.type != "BitmapText"){
                     child.setScale(10, 10)
                     child.setX(child.x * 10)
                     child.setY(child.y * 10)
@@ -264,18 +280,20 @@ export default class Parallax extends Phaser.Scene {
             } 
         });
 
+        
 
         // make tile map from csv
         this.map = this.make.tilemap({ key: 'csv', tileWidth: 80, tileHeight: 220 });
         this.tiles = this.map.addTilesetImage("crack-tiles");
-        this.layer = this.map.createLayer(0, this.tiles, 0, 740)
+        this.layer = this.map.createLayer(0, this.tiles, 0, 740).setDepth(2)
         
-
         //player add and physics! begin one tile away created later cause not scaled
-        this.player = this.physics.add.sprite(100, 0, 'person')
+        this.player = this.physics.add.sprite(100, 0, 'person').setDepth(2)
         this.player.setOrigin(0,0)
         this.player.setScale(8.33) //200(width) x 416.66
         this.player.setCollideWorldBounds(true);
+
+        
 
         this.physics.add.collider(this.sidewalk, this.player)  
 
@@ -364,6 +382,9 @@ export default class Parallax extends Phaser.Scene {
         var progressNum = ((this.distance + 1.0) / 250.00 ) * 100.00
         this.progressText.setText("progress: " + progressNum.toFixed(2) + "%")
 
+
+        //update penalty text
+        this.penaltyText.setText("penalty: " + this.penalty)
         if(this.distance >= 249){
             //user completed game
             console.log("GAME COMPLETED LES GOOO")
@@ -386,6 +407,7 @@ export default class Parallax extends Phaser.Scene {
             
             //display new text
             this.newLevelTipText.setVisible(true).setText(this.tipTexts[this.level - 1])
+            this.tipBg.setVisible(true)
             this.newLevelTipShowing = true
 
             //change images depending on level
@@ -505,6 +527,7 @@ export default class Parallax extends Phaser.Scene {
             if(this.newLevelTipShowing){
                 this.newLevelTipShowing = false
                 this.newLevelTipText.setVisible(false)
+                this.tipBg.setVisible(false)
             }
 
             //only run if next step is ready (in order to stop continuous key spams)
@@ -520,8 +543,30 @@ export default class Parallax extends Phaser.Scene {
                 var inTheGreen = true
                 var xPos = this.slider.body.x
 
-                //7(0 cause of 10x scale) px away from very center; center i 92 pixel
-                if(xPos > 1030 || xPos < 850){
+                //penalty stuff
+                var fromCenter = Math.abs(xPos - 960) / 10
+
+                console.log(fromCenter)
+                if(fromCenter <= 3){
+                    this.penalty -= 1
+                    
+                }
+                else if(fromCenter <= 7){
+                    this.penalty -= 0.5
+                }
+                else if(fromCenter <= 11){
+                    //no points added or removed
+                }
+                else if(fromCenter <= 18){
+                    this.penalty += .25
+                    inTheGreen = false
+                }
+                else if(fromCenter <= 25){
+                    this.penalty += .5
+                    inTheGreen = false
+                }
+                else{
+                    this.penalty += .1
                     inTheGreen = false
                 }
                 
@@ -600,6 +645,8 @@ export default class Parallax extends Phaser.Scene {
                 }
                 else {
                     console.log("MISSED LLLLLL")
+
+
                     this.showTextForASec(this.missedGreenMsg, 2000)
                     this.time.addEvent({
                         delay: 400,
