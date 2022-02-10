@@ -267,7 +267,7 @@ export default class Parallax extends Phaser.Scene {
         this.group.children.iterate((child, index) => {
 
             //scale everything except for graphics
-            if(index != 0){
+            if(true){
 
                 //cause if u scale text it looks mega huge
                 if(child.type != "Text" && child.type != "BitmapText"){
@@ -398,7 +398,7 @@ export default class Parallax extends Phaser.Scene {
         }
 
 
-        if(this.distance >= 9){
+        if(this.distance >= 249){
             this.isOnCongratsMsg = true
             this.scene.start('Congrat', {score: (this.currentTime + this.penalty).toFixed(1)})
             return

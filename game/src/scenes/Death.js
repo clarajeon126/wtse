@@ -146,7 +146,7 @@ export default class Death extends Phaser.Scene
         this.group.children.iterate((child, index) => {
 
             //scale everything except for graphics
-            if(index != 0){
+            if(true){
                 console.log(child.type)
 
                 //cause if u scale text it looks mega huge

@@ -1,8 +1,6 @@
 import Phaser from 'phaser';
-import Game from './scenes/Game';
 import Parallax from './scenes/Parallax';
 import Intro from './scenes/Intro';
-import Text from './scenes/Text';
 import Death from './scenes/Death';
 import Leaderboard from './scenes/Leaderboard';
 import Congrat from './scenes/Congrat';
@@ -20,10 +18,10 @@ const C = {
         default: 'arcade',
         arcade: {
             gravity: { y: 300 },
-            debug: true
+            debug: false
         }
     },
-    scene: [Congrat, Intro, Leaderboard, Parallax, Death]
+    scene: [Intro, Congrat, Leaderboard, Parallax, Death]
 };
 
 // var C = {
