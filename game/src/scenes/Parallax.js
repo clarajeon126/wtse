@@ -64,6 +64,7 @@ import cracktilemap from "../assets/color.png"
 import fontpng from "../assets/minecraftia.png";
 import fontxml from "../assets/minecraftia.xml";
 
+import csvfile from "../assets/crackmap.csv"
 export default class Parallax extends Phaser.Scene {
 
     constructor(){
@@ -128,7 +129,7 @@ export default class Parallax extends Phaser.Scene {
 
         this.load.image("warningbg", warning)
         //csv that has the map created
-        this.load.tilemapCSV('csv', "src/assets/crackmap.csv")
+        this.load.tilemapCSV('csv', csvfile)
 
         //tiles w cracks index 0 is default
         this.load.image("crack-tiles", cracktilemap);
