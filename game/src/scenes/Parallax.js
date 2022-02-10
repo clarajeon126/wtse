@@ -54,11 +54,11 @@ import crack4 from "../assets/passets/crack4.png"
 
 import statBg from "../assets/passets/stats.png"
 import tipBg from "../assets/passets/tipBg.png"
-
+import warning from "../assets/passets/warning.png"
 import slider from "../assets/slider.png"
 import person from "../assets/passets/peoplesprite.png"
 
-import cracktilemap from "../assets/cracktilemap.png"
+import cracktilemap from "../assets/color.png"
 
 //font files
 import fontpng from "../assets/minecraftia.png";
@@ -72,7 +72,7 @@ export default class Parallax extends Phaser.Scene {
         })
     }
     preload() {
-
+        console.log("lo")
         //load all the assets :DD
         this.load.image('sky', sky);
         this.load.image('farcity', farcity);
@@ -126,6 +126,7 @@ export default class Parallax extends Phaser.Scene {
         this.load.image("nhfarbush", nhfarbush);
         this.load.image("nhclosebush", nhclosebush);
 
+        this.load.image("warningbg", warning)
         //csv that has the map created
         this.load.tilemapCSV('csv', "src/assets/crackmap.csv")
 
@@ -143,6 +144,8 @@ export default class Parallax extends Phaser.Scene {
     }
 
     create() {
+        console.log("hi")
+
         this.tipTexts = ["welcome to where the sidewalk ends!\npress the left/right keys to walk and the A key to jump across small cracks",
                         "the moving slider has gotten faster! \nmake sure to land it in the green in order to move!",
                         "introducing,,, larger cracks! \nuse the S key to jump across medium cracks",
@@ -165,8 +168,8 @@ export default class Parallax extends Phaser.Scene {
         this.upSidewalk = this.add.tileSprite(96, 77, 0, 0,'upSidewalk')
 
         //parallax bg image in front of the sidewalk nonsense
-        this.streetlights = this.add.tileSprite(96, 54, 0, 0, 'mtnfarbushday');
-        this.bushes = this.add.tileSprite(96, 54, 0, 0, 'mtnclosebushday');
+        this.streetlights = this.add.tileSprite(96, 54, 0, 0, 'mtnfarbushday').setDepth(2);
+        this.bushes = this.add.tileSprite(96, 54, 0, 0, 'mtnclosebushday').setDepth(3);
 
         //slider stuff + slider physics
         this.gradiant = this.add.image(96, 95, 'gradient').setDepth(5)
@@ -212,16 +215,18 @@ export default class Parallax extends Phaser.Scene {
         this.cursors = this.input.keyboard.createCursorKeys();
         this.rightKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         this.leftKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
-        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE, false);
 
         //a is small 1 tile jump; s is med 2 tile jump; d is large 3 tile jump
-        this.aKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
-        this.sKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
-        this.dKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
+        this.aKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A, false)
+        this.sKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S), false
+        this.dKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D, false)
+
+        this.warningBg = this.add.image(96, 54, 'warningbg').setVisible(false)
 
         //add texts
-        this.wrongFootMsg = this.add.text(960, 540, "nope wrong foot lulz").setFontSize(40).setColor('red').setVisible(false)
-        this.missedGreenMsg = this.add.text(960, 540, "yikes.. you missed. aim for the green zone!!").setFontSize(40).setColor('red').setVisible(false)
+        this.wrongFootMsg = this.add.text(960, 540, "nope wrong foot lulz").setFontSize(40).setVisible(false).setWordWrapWidth(700)
+        this.missedGreenMsg = this.add.text(960, 540, "yikes.. you missed. aim for the green zone!!").setFontSize(40).setVisible(false).setWordWrapWidth(700).setAlign('center')
         
         this.statBg = this.add.image(140,2, "statBg")
         this.statBg.setOrigin(0,0)
@@ -244,9 +249,12 @@ export default class Parallax extends Phaser.Scene {
 
         this.showTextForASec = (text, delay) => {
             text.setVisible(true)
+            this.warningBg.setVisible(true)
             this.time.addEvent({
                 delay: delay,
                 callback: ()=>{
+                    this.warningBg.setVisible(false)
+
                     text.setVisible(false)
                 }
             })
@@ -260,7 +268,6 @@ export default class Parallax extends Phaser.Scene {
 
             //scale everything except for graphics
             if(index != 0){
-                console.log(child.type)
 
                 //cause if u scale text it looks mega huge
                 if(child.type != "Text" && child.type != "BitmapText"){
@@ -326,6 +333,7 @@ export default class Parallax extends Phaser.Scene {
 
             this.isOnTutorialMsg = true
         
+            let arr = [0,1,1]
         //is run when player touches sidewalk
         this.physics.add.overlap(this.player, this.layer, function(thePlayer, tile) {
 
@@ -333,12 +341,18 @@ export default class Parallax extends Phaser.Scene {
             if(!this.isOnDeathMsg && !this.isJumping){
                 //gets all the tiles (usually 3) that the player obj is touching
                 var tilesPlayerIsTouching = this.layer.getTilesWithinWorldXY(100,740, 200, 220)
+                
+                if(tilesPlayerIsTouching.length >= 4){
+                    tilesPlayerIsTouching.shift()
+                }
                 tilesPlayerIsTouching.every((tile) => {
                     //0 is the default base one w/o any cracks
                     if(tile.index != 0){
+                        console.log(tile.index + "LOL" + this.distance + this.isJumping)
                         //died!!!
                         this.isOnDeathMsg = true
-                        this.scene.launch("Death", { time: this.currentTime })
+
+                        this.scene.start("Death", { score: (this.currentTime + this.penalty).toFixed(1) })
                         return false;
                     }
                     return true;
@@ -378,7 +392,17 @@ export default class Parallax extends Phaser.Scene {
             console.log("DEAD")
             return
         }
+        if(this.isOnCongratsMsg){
+            console.log("GAME COMPLETED")
+            return
+        }
 
+
+        if(this.distance >= 9){
+            this.isOnCongratsMsg = true
+            this.scene.start('Congrat', {score: (this.currentTime + this.penalty).toFixed(1)})
+            return
+        }
         //update progress text
         var progressNum = ((this.distance + 1.0) / 250.00 ) * 100.00
         this.progressText.setText("progress: " + progressNum.toFixed(2) + "%")
@@ -391,7 +415,6 @@ export default class Parallax extends Phaser.Scene {
             console.log("GAME COMPLETED LES GOOO")
         }
         //deal with level display changes
-        console.log(this.distance)
         var notInCorrectLevel = (this.level) * 50 <= this.distance
 
         if(notInCorrectLevel){
@@ -467,7 +490,6 @@ export default class Parallax extends Phaser.Scene {
 
         //for nice smooth parallax bg moving
         if(this.isInStep) {
-            console.log('in STEPPPP')
             //parallax move bg
             this.minStepSize = .5
                     this.farcity.tilePositionX += this.minStepSize;
@@ -478,7 +500,6 @@ export default class Parallax extends Phaser.Scene {
                     this.bushes.tilePositionX += this.minStepSize * 5
         }
         if(this.isJumping) {
-            console.log('in JUMPPP')
             //parallax move bg
             this.minStepSize = .5
                     this.farcity.tilePositionX += this.minStepSize;
@@ -595,10 +616,20 @@ export default class Parallax extends Phaser.Scene {
                         }
 
                         this.isJumping = true
+                        
                         this.time.addEvent({
                             delay: 2000,
                             callback:() => {
-                                
+                                this.player.setVelocityY(0)
+
+                                var xPos = Math.abs(this.layer.x)
+                                console.log(xPos + "tile layer x position!")
+                                console.log(xPos % 80)
+                                if(xPos % 80 != 0){
+                                    console.log("not mod of 80")
+                                    xPos = (Math.round(xPos / 80.00)) * -80
+                                    this.layer.setX(xPos)
+                                } 
                                 this.layer.body.setVelocityX(0)
                                 this.isJumping = false
                             }
@@ -667,6 +698,7 @@ export default class Parallax extends Phaser.Scene {
             }
         }
         else if (correctStepTaken == "wrong") {
+            this.penalty += .5
             this.showTextForASec(this.wrongFootMsg, 400)
         }
         else if (correctStepTaken == "no") {

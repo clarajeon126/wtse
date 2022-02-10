@@ -10,6 +10,7 @@ import pausebutton from "../assets/passets/pausebutton.png";
 import restartbutton from "../assets/passets/restart.png";
 import playbutton from "../assets/passets/playbutton.png";
 
+import background from "../assets/bgmain.png"
 export default class Intro extends Phaser.Scene {
 
     constructor() {
@@ -23,6 +24,8 @@ export default class Intro extends Phaser.Scene {
         this.load.spritesheet('nextbutton', nextbutton, { frameWidth: 22, frameHeight: 12 });
         this.load.spritesheet('playbutton', playbutton, { frameWidth: 21, frameHeight: 11 });
         this.load.image('intro', intro);
+
+        this.load.spritesheet('background',background, {frameWidth: 192, frameHeight: 108} )
         this.load.bitmapFont(
             'font',
             fontpng,
@@ -37,12 +40,23 @@ export default class Intro extends Phaser.Scene {
         this.text = ["welcome to \n\nwhere the sidewalk ends",
             "in this game, you'll be controlling \r\n a lanky biped who's on a mission!",
             "what this mission is you ask?",
-            "of course to tell your mom [SOMETHING]",
+            "of course to tell your mom how much you <3 her",
             "press the left and right keys to time your steps",
             "the better timed your steps, the faster you can make it home!",
             "however, as you walk along the sidewalk, beware of cracks!",
-            "make sure to jump over them with the space bar",
+            "make sure to jump over them with the A, S, or D key. And time your key taps in the green zone! If you miss it, your total time will go up! Less your time is the better!",
             "...who knows what'll happen otherwise"];
+
+
+        //for bg anims
+        this.restartbutton = this.add.sprite(96, 54, 'background').setAlpha(.5)
+        this.anims.create({
+            key: 'runbg',
+            frames: this.anims.generateFrameNumbers('background', { frames: [0,1,2,3,4] }),
+            frameRate: 1,
+            repeat: -1
+        });
+        this.restartbutton.anims.play('runbg')
 
 
         //add intro playbutton and baseboard but baseboard is not visible yet
@@ -89,10 +103,7 @@ export default class Intro extends Phaser.Scene {
             this.playbutton.anims.play('clickp', true)
 
             //delay just for aesthetics yk so we get a tinyy delay
-            this.time.addEvent({
-                delay:400,
-                callback: () => {
-
+            
                     //add the instructions pages
                     this.baseboard.setVisible(true)
                     this.nextbutton.setVisible(true)
@@ -105,8 +116,6 @@ export default class Intro extends Phaser.Scene {
                     
                     //for other create structures
                     this.online = true;
-                }
-            })
             
         });
 
@@ -152,6 +161,7 @@ export default class Intro extends Phaser.Scene {
 
 
             if (i == 9) {
+                this.scene.stop('Intro')
                 this.scene.start('Parallax');
                 console.log('heyo');
             }
