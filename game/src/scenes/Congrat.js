@@ -23,7 +23,7 @@ export default class Congrat extends Phaser.Scene
     }
     preload ()
     {
-        this.load.html("form", "src/scenes/name.html");
+        this.load.html("form", "https://wtse.fun/name.html");
         this.load.image('baseboard', baseboard)
         this.load.image('congrat', congrats)
         this.load.spritesheet('background',background, {frameWidth: 192, frameHeight: 108} )

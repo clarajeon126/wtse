@@ -35,7 +35,6 @@ import mtnclosetreenight from "../assets/passets/mtnclosetreenight.png";
 import mtnfarbushnight from "../assets/passets/mtnfarbushnight.png";
 import mtnclosebushnight from "../assets/passets/mtnclosebushnight.png";
 
-import endscreen from "../assets/passets/endscreen.png";
 
 //neigborhood
 import nhsky from "../assets/passets/nhsky.png";
@@ -58,13 +57,12 @@ import warning from "../assets/passets/warning.png"
 import slider from "../assets/slider.png"
 import person from "../assets/passets/peoplesprite.png"
 
-import cracktilemap from "../assets/color.png"
+import cracktilemap from "../assets/cracktilemap.png"
 
 //font files
 import fontpng from "../assets/minecraftia.png";
 import fontxml from "../assets/minecraftia.xml";
 
-import csvfile from "../assets/crackmap.csv"
 export default class Parallax extends Phaser.Scene {
 
     constructor(){
@@ -128,8 +126,6 @@ export default class Parallax extends Phaser.Scene {
         this.load.image("nhclosebush", nhclosebush);
 
         this.load.image("warningbg", warning)
-        //csv that has the map created
-        this.load.tilemapCSV('csv', csvfile)
 
         //tiles w cracks index 0 is default
         this.load.image("crack-tiles", cracktilemap);
@@ -223,11 +219,11 @@ export default class Parallax extends Phaser.Scene {
         this.sKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S), false
         this.dKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D, false)
 
-        this.warningBg = this.add.image(96, 54, 'warningbg').setVisible(false)
+        this.warningBg = this.add.image(96, 54, 'warningbg').setVisible(false).setDepth(8)
 
         //add texts
-        this.wrongFootMsg = this.add.text(960, 540, "nope wrong foot lulz").setFontSize(40).setVisible(false).setWordWrapWidth(700)
-        this.missedGreenMsg = this.add.text(960, 540, "yikes.. you missed. aim for the green zone!!").setFontSize(40).setVisible(false).setWordWrapWidth(700).setAlign('center')
+        this.wrongFootMsg = this.add.text(960, 540, "nope wrong foot lulz").setFontSize(40).setVisible(false).setWordWrapWidth(700).setDepth(8)
+        this.missedGreenMsg = this.add.text(960, 540, "yikes.. you missed. aim for the green zone!!").setFontSize(40).setVisible(false).setWordWrapWidth(700).setAlign('center').setDepth(8)
         
         this.statBg = this.add.image(140,2, "statBg")
         this.statBg.setOrigin(0,0)
@@ -289,10 +285,10 @@ export default class Parallax extends Phaser.Scene {
             } 
         });
 
-        
+        const mapArr = [[0,0,0,0,0,0,0,1,0,0,0,0,0,2,0,0,0,1,0,0,0,0,1,0,0,0,2,0,0,0,0,0,1,0,0,0,2,0,0,0,1,0,0,0,0,2,0,0,0,1,0,0,0,1,0,0,0,2,0,0,0,1,0,0,0,0,2,0,0,0,0,0,1,0,0,0,2,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,2,0,0,0,2,0,0,0,0,3,4,0,0,0,0,1,0,0,0,0,5,6,0,0,0,0,0,0,3,4,0,0,0,1,0,0,0,0,2,0,0,0,3,4,0,0,0,0,5,6,0,0,1,0,0,0,7,8,9,0,0,0,0,0,3,4,0,0,0,0,0,5,6,0,0,0,1,0,0,0,0,0,2,0,0,0,0,7,8,9,0,0,0,1,0,0,0,5,6,0,0,0,1,0,0,0,0,0,2,0,1,0,0,0,0,7,8,9,0,0,0,1,0,2,0,0,0,0,5,6,0,0,0,2,1,0,0,0,7,8,9,0,0,0,0,0,3,4,0,0,0,1]]
 
         // make tile map from csv
-        this.map = this.make.tilemap({ key: 'csv', tileWidth: 80, tileHeight: 220 });
+        this.map = this.make.tilemap({ data: mapArr, tileWidth: 80, tileHeight: 220 });
         this.tiles = this.map.addTilesetImage("crack-tiles");
         this.layer = this.map.createLayer(0, this.tiles, 0, 740).setDepth(2)
         
